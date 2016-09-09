@@ -1,0 +1,37 @@
+.space .navbar {
+  /*background-color: #CDDC39;*/
+}
+
+.space .navbar a {
+  /*color: #DCEDC8;*/
+}
+
+
+.row {
+  margin-bottom: 20px;
+}
+.col-md-12 h2 {
+  font-size: 44px;
+}
+.col-md-6 h2 {
+  font-size: 32px;
+}
+.col-md-4 h2, .col-md-3 h2 {
+  font-size: 22px;
+}
+
+.teaser p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+a.teaser {
+  color: #333;
+  text-decoration: none;
+}
+
+a.teaser:hover {
+  color: #777;
+  text-decoration: none;
+}

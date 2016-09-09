@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+</head>
+
+<body>
+
+<div class="pos-f-t">
+    <div class="collapse" id="navbar-header">
+        <div class="container bg-inverse p-a-1">
+            <h3>Collapsed content</h3>
+            <p>Toggleable via the navbar brand.</p>
+        </div>
+    </div>
+    <nav class="navbar navbar-light navbar-static-top bg-faded">
+        <div class="container">
+            <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2">
+                &#9776;
+            </button>
+            <div class="collapse navbar-toggleable-xs" id="exCollapsingNavbar2">
+                <a th:text="${site.aspects.contentData.data.title}" class="navbar-brand" th:href="${purl.create(site.id)}" href="#">Navbar brand</a>
+                <ul class="nav navbar-nav">
+                    <li th:each="section : ${sections}" class="nav-item">
+                        <a th:text="${section.aspects.contentData.data.title}" th:href="${purl.create(section.id)}" class="nav-link" href="#">Section link</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+
+</body>
+</html>
