@@ -12,15 +12,16 @@ import java.util.Map;
 
 @FeignClient(name = "content-api", url = "http://localhost:8080/ace")
 interface ContentApi {
-    @Cacheable("content")
-    @RequestMapping(method = RequestMethod.GET, value = "/content/{alias}/{id}")
-    Map<String, Object> content(@RequestParam("alias") String alias, @RequestParam("id") String id);
 
-    @Cacheable("content2")
+    default Map<String, Object> content(String alias, String id) {
+        return content(alias + "/" + id);
+    }
+
+    @Cacheable("content")
     @RequestMapping(method = RequestMethod.GET, value = "/content/{aliasandid}")
     Map<String, Object> content(@RequestParam("aliasandid") String id);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/search/onecms/select?q={q}&wt=json&rows=20")
+    @RequestMapping(method = RequestMethod.GET, value = "/search/onecms/select?q={q}&wt=json&rows=20&sort=modificationTime+desc")
     Map<String, Object> search(@RequestParam("q") String q);
 
     default List<Map<String, Object>> batch(List<String> ids) {
@@ -29,5 +30,13 @@ interface ContentApi {
             contents.add(content(id));
         });
         return contents;
+    }
+
+    default String translateSymbolicId(String symbolicId) {
+        return ContentMapUtil.getString(content(symbolicId), "id");
+    }
+
+    default boolean isSymbolicId(String id) {
+        return id.startsWith("uuid");
     }
 }

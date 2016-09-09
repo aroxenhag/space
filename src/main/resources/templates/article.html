@@ -13,6 +13,7 @@
 
 
     <div class="container">
+        <img th:if="${article.aspects.contentData.data.imageRef != null}" th:src="${iurl.create(article.aspects.contentData.data.imageRef)}" />
         <h1 th:text="${article.aspects.contentData.data.title}">To replace...</h1>
         <p class="lead" th:utext="${article.aspects.contentData.data.lead}">To replace...</p>
 

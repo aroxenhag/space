@@ -1,6 +1,5 @@
 package space;
 
-import com.google.common.base.Joiner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.stereotype.Controller;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 
 @Controller
 @EnableFeignClients
@@ -58,8 +56,6 @@ public class DispatcherController {
         }
         model.put("sections", sections);
 
-        model.put("purl", new UrlCreator(contentApi));
-
         // Get articles
         Map searchResult = contentApi.search("type:article");
         List docs = (List) ContentMapUtil.getObject(searchResult, "response.docs");
@@ -86,6 +82,11 @@ public class DispatcherController {
         }
         model.put("rows", rows);
 
+        // Add generic tools
+        model.put("curl", new ContentUrlCreator(contentApi));
+        model.put("iurl", new ImageUrlCreator("http://localhost:8080/image", contentApi));
+        model.put("contentApi", contentApi);
+
         if (article != null) {
             return "article";
         } else {
@@ -99,10 +100,10 @@ public class DispatcherController {
         return Arrays.asList(Arrays.copyOfRange(path, 1, path.length));
     }
 
-    class UrlCreator {
+    class ContentUrlCreator {
         private ContentApi contentApi;
 
-        public UrlCreator(ContentApi contentApi) {
+        public ContentUrlCreator(ContentApi contentApi) {
             this.contentApi = contentApi;
         }
 
@@ -118,6 +119,24 @@ public class DispatcherController {
                 }
                 id = parentId;
             }
+        }
+    }
+
+    class ImageUrlCreator {
+        private String baseUrl;
+        private ContentApi contentApi;
+
+        public ImageUrlCreator(String baseUrl, ContentApi contentApi) {
+            this.baseUrl = baseUrl;
+            this.contentApi = contentApi;
+        }
+
+        // Supports jpg in 2:1 format
+        public String create(String id) {
+            if (contentApi.isSymbolicId(id)) {
+                id = contentApi.translateSymbolicId(id);
+            }
+            return baseUrl + "/" + id + "/image.jpg?a=2:1";
         }
     }
 }
