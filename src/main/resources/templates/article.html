@@ -12,23 +12,32 @@
 <div class="container">
 
 
-    <div class="container">
-        <img th:if="${article.aspects.contentData.data.imageRef != null}" th:src="${iurl.create(article.aspects.contentData.data.imageRef)}" />
-        <h1 th:text="${article.aspects.contentData.data.title}">To replace...</h1>
-        <p class="lead" th:utext="${article.aspects.contentData.data.lead}">To replace...</p>
-
-        <!--<ul>-->
-            <!--<li th:each="tag : ${article.tags}">-->
-                <!--<span th:text="${tag}">Tag...</span>-->
-            <!--</li>-->
-        <!--</ul>-->
-        <div th:utext="${article.aspects.contentData.data.body}">To replace...</div>
+    <div class="row">
+        <div class="col-md-9">
+            <img th:if="${article.aspects.contentData.data.imageRef != null}"
+                 th:src="${iurl.create(article.aspects.contentData.data.imageRef)}"/>
+            <h1 th:text="${article.aspects.contentData.data.title}">To replace...</h1>
+            <p class="lead" th:utext="${article.aspects.contentData.data.lead}">To replace...</p>
+            <div th:utext="${article.aspects.contentData.data.body}">To replace...</div>
+        </div>
+        <div class="col-md-3">
+            <div class="ad-placeholder">
+                <div>AD</div>
+            </div>
+        </div>
     </div>
 
+    <!--<ul>-->
+    <!--<li th:each="tag : ${article.tags}">-->
+    <!--<span th:text="${tag}">Tag...</span>-->
+    <!--</li>-->
+    <!--</ul>-->
 
 
-    <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS. A fixed navbar has been added with <code>padding-top: 60px;</code> on the <code>body &gt; .container</code>.</p>
-    <p>Back to <a href="../sticky-footer">the default sticky footer</a> minus the navbar.</p>
+    <!--<p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML-->
+        <!--and CSS. A fixed navbar has been added with <code>padding-top: 60px;</code> on the <code>body &gt;-->
+            <!--.container</code>.</p>-->
+    <!--<p>Back to <a href="../sticky-footer">the default sticky footer</a> minus the navbar.</p>-->
 </div>
 
 <footer class="footer">

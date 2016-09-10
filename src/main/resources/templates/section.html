@@ -17,21 +17,29 @@
         <!--</li>-->
     <!--</ol>-->
 
-    <div th:each="row : ${rows}" class="row">
-        <a th:each="teaser : ${row}" th:class="'teaser col-md-' + 12 / ${row.size()}" th:href="${curl.create(teaser.id)}">
-            <img th:if="${teaser.aspects.contentData.data.imageRef != null}" th:src="${iurl.create(teaser.aspects.contentData.data.imageRef)}" />
-            <h2 th:text="${teaser.aspects.contentData.data.title}" th:title="${teaser.id}">Teaser headline</h2>
-            <p th:text="${teaser.aspects.contentData.data.lead}">Teaser text...</p>
-        </a>
+    <div class="row">
+        <div class="col-md-9">
+            <div th:each="row : ${rows}" class="row">
+                <a th:each="teaser : ${row}" th:class="'teaser col-md-' + 12 / ${row.size()}" th:href="${curl.create(teaser.id)}">
+                    <img th:if="!${utils.isEmpty(teaser, 'aspects.contentData.data.imageRef')}" th:src="${iurl.create(teaser.aspects.contentData.data.imageRef)}" />
+                    <h2 th:text="${teaser.aspects.contentData.data.title}" th:title="${teaser.id}">Teaser headline</h2>
+                    <p class="lead" th:text="${teaser.aspects.contentData.data.lead}">Teaser text...</p>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="ad-placeholder">
+                <div>AD</div>
+            </div>
+        </div>
     </div>
 
-    <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS. A fixed navbar has been added with <code>padding-top: 60px;</code> on the <code>body &gt; .container</code>.</p>
-    <p>Back to <a href="../sticky-footer">the default sticky footer</a> minus the navbar.</p>
 </div>
 
 <footer class="footer">
     <div class="container">
         <span class="text-muted" th:text="'&copy; ' + ${site.aspects.contentData.data.title}">Copyright notice</span>
+        <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS. A fixed navbar has been added with <code>padding-top: 60px;</code> on the <code>body &gt; .container</code>.</p>
     </div>
 </footer>
 

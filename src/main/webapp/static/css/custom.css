@@ -1,14 +1,41 @@
 .space .navbar {
-  /*background-color: #CDDC39;*/
+  background-color: #fff;
+  border-bottom: 1px solid #E5E5E5;
 }
-
-.space .navbar a {
-  /*color: #DCEDC8;*/
-}
-
 
 .navbar-right {
   float: right;
+  text-transform: uppercase;
+}
+
+body.space > .container {
+  padding-top: 70px;
+}
+
+.navbar-brand {
+  /*font-family: 'Raleway', sans-serif;*/
+  font-family: 'Rokkitt', serif;
+  font-weight: 800;
+  font-size: 2.4rem;
+  padding: .45rem 0 0;
+/*
+  font-size: 2.0rem;
+  padding: .25rem 0 0;
+*/
+  line-height: 2.0rem;
+}
+
+.ad-placeholder {
+  background-color: #B2EBF2;
+  height: 360px;
+  color: rgba(255, 255, 255, .8);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.ad-placeholder > * {
+  text-align: center;
 }
 
 img {

@@ -32,4 +32,8 @@ public class ContentMapUtil {
     public static String getFriendlyAlias(Map<String, Object> map) {
         return getString(map, "aspects.contentData.data.friendlyAlias");
     }
+
+    public static String getUUID(Map<String, Object> map) {
+        return getString(map, "aspects.contentData.data.uuid");
+    }
 }
