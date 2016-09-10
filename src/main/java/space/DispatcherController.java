@@ -127,13 +127,7 @@ public class DispatcherController {
         }
 
         public boolean isEmpty(Object o) {
-            if (o == null) {
-                return true;
-            }
-            if (o instanceof Collection && ((Collection) o).isEmpty()) {
-                return true;
-            }
-            return false;
+            return o == null || (o instanceof Collection && ((Collection) o).isEmpty());
         }
     }
 

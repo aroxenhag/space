@@ -11,17 +11,11 @@
 
 <div class="container">
 
-    <!--<ol>-->
-        <!--<li th:each="article : ${articles}" class="nav-item">-->
-            <!--<a th:text="${article.aspects.contentData.data.title}" th:href="${curl.create(article.id)}" href="#">Article link</a>-->
-        <!--</li>-->
-    <!--</ol>-->
-
     <div class="row">
         <div class="col-md-9">
             <div th:each="row : ${rows}" class="row">
                 <a th:each="teaser : ${row}" th:class="'teaser col-md-' + 12 / ${row.size()}" th:href="${curl.create(teaser.id)}">
-                    <img th:if="!${utils.isEmpty(teaser, 'aspects.contentData.data.imageRef')}" th:src="${iurl.create(teaser.aspects.contentData.data.imageRef)}" />
+                    <img th:unless="${utils.isEmpty(teaser, 'aspects.contentData.data.imageRef')}" th:src="${iurl.create(teaser.aspects.contentData.data.imageRef)}" />
                     <h2 th:text="${teaser.aspects.contentData.data.title}" th:title="${teaser.id}">Teaser headline</h2>
                     <p class="lead" th:text="${teaser.aspects.contentData.data.lead}">Teaser text...</p>
                 </a>
