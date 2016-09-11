@@ -135,10 +135,19 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 12px;
   text-transform: uppercase;
   display: inline-block;
-  padding: 6px;
   background-color: #0288D1;
-  color: #fff;
   margin: 0 12px 6px 0;
+}
+
+.article .tags li a {
+  padding: 6px;
+  color: #fff;
+  display: block;
+}
+
+.article .tags li a:hover {
+  color: #fff;
+  background-color: lighten(#0288D1, 10%);
 }
 
 .article .byline {

@@ -1,16 +1,16 @@
 package space;
 
-import org.springframework.beans.factory.ObjectFactory;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,16 +31,16 @@ public class DispatcherController {
     @Value("${image-service-base-url}")
     private String imageServiceBaseUrl;
 
-    @RequestMapping(value = "/about/{tag}")
-    public String about(@PathVariable("tag") String tag, HttpServletRequest request, Map<String, Object> model) {
+    @RequestMapping(value = "/{site}/about/{tag}")
+    public String about(@PathVariable("site") String site, @PathVariable("tag") String tag, HttpServletRequest request, Map<String, Object> model) {
         Map<String, Object> result = contentApi.search("tag_ss:" + tag);
-        System.out.println(result);
-        return "landing";
+        List<Map<String, Object>> articles = getArticlesForResult(result);
+        return dispatch(request, model, Arrays.asList("friendly/" + site), articles);
     }
 
-    @RequestMapping(value = "/by/{tag}")
+    @RequestMapping(value = "/by/{author}")
     public String by(HttpServletRequest request, Map<String, Object> model) {
-        return "landing";
+        return "NOT IMPLEMENTED";
     }
 
     @RequestMapping(value = "{path:(?!css|wro4j|static|error).*$}/**")
@@ -53,6 +53,10 @@ public class DispatcherController {
             contentPath.add("friendly/" + s);
         });
 
+        return dispatch(request, model, contentPath, null);
+    }
+
+    private String dispatch(HttpServletRequest request, Map<String, Object> model, List<String> contentPath, List<Map<String, Object>> articles) {
         // Get contents for content path
         List<Map<String, Object>> contents = contentApi.batch(contentPath);
 
@@ -82,21 +86,24 @@ public class DispatcherController {
         }
         model.put("sections", sections);
 
-
+        // Get top articles for site for top list
         List<String> siteSubSectionIds = new ArrayList<>();
         addAllSubSectionIds(contentApi, site, siteSubSectionIds);
         Map siteArticlesResult = contentApi.search("type:article AND parentId_s:(" + String.join(" ", siteSubSectionIds) + ")");
         List<Map<String, Object>> siteTopArticles = getArticlesForResult(siteArticlesResult);
-        model.put("articles", siteTopArticles);
+        model.put("topArticles", siteTopArticles);
 
         // Get most recent articles for current section (and its subsections)
         // NOTE: Since it's har to index the parent chain, we expand the query instead
         // NOTE: Since the parent ids are the uuids that are never resoved to real ids,
         // we have to use the uuids here.
-        List<String> currentSectionSubSectionIds = new ArrayList<>();
-        addAllSubSectionIds(contentApi, section, currentSectionSubSectionIds);
-        Map currentSectionArticlesResult = contentApi.search("type:article AND parentId_s:(" + String.join(" ", currentSectionSubSectionIds) + ")");
-        List<Map<String, Object>> sectionArticles = getArticlesForResult(currentSectionArticlesResult);
+        List<Map<String, Object>> pageArticles = articles; // Get from param. If null, use most recent articles from section
+        if (pageArticles == null) {
+            List<String> currentSectionSubSectionIds = new ArrayList<>();
+            addAllSubSectionIds(contentApi, section, currentSectionSubSectionIds);
+            Map currentSectionArticlesResult = contentApi.search("type:article AND parentId_s:(" + String.join(" ", currentSectionSubSectionIds) + ")");
+            pageArticles = getArticlesForResult(currentSectionArticlesResult);
+        }
 
         // Build layout
         List<Integer> layoutConfig = Arrays.asList(new Integer[]{1, 2, 1, 4, 3});
@@ -106,10 +113,10 @@ public class DispatcherController {
         for (int cols : layoutConfig) {
             List<Map<String, Object>> rowContent = new ArrayList<>();
             for (int i = 0; i < cols; i++) {
-                if (articleIndex >= sectionArticles.size()) {
+                if (articleIndex >= pageArticles.size()) {
                     break outer;
                 }
-                rowContent.add(sectionArticles.get(articleIndex++));
+                rowContent.add(pageArticles.get(articleIndex++));
             }
             rows.add(rowContent);
         }
@@ -117,6 +124,7 @@ public class DispatcherController {
 
         // Add generic utilities
         model.put("curl", new ContentUrlCreator(contentApi));
+        model.put("lpage", new LandingPageUrlCreator(contentApi));
         model.put("iurl", new ImageUrlCreator(contentApi));
         model.put("contentApi", contentApi);
         model.put("utils", new Utils());
@@ -155,6 +163,13 @@ public class DispatcherController {
         String[] path = ((String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE)).split("/");
         return Arrays.asList(Arrays.copyOfRange(path, 1, path.length));
+    }
+
+    private String toFriendlyFormat(String string) {
+        return StringUtils.stripStart(StringUtils.stripEnd(Normalizer.normalize(string.trim().toLowerCase(),
+                Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .replaceAll("[^\\p{Alnum}]+", "-"), "-"), "-");
     }
 
     class DateUtil {
@@ -204,6 +219,19 @@ public class DispatcherController {
                 }
                 id = parentId;
             }
+        }
+    }
+
+    class LandingPageUrlCreator {
+        private ContentApi contentApi;
+
+        public LandingPageUrlCreator(ContentApi contentApi) {
+            this.contentApi = contentApi;
+        }
+
+        public String create(Map<String, Object> site, String dimension, String entity) {
+            String friendlyAlias = ContentMapUtil.getFriendlyAlias(site);
+            return "/" + friendlyAlias + "/" + dimension + "/" + toFriendlyFormat(entity);
         }
     }
 

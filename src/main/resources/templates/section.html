@@ -33,6 +33,13 @@
             <div class="ad-placeholder">
                 <div>THIS IS AD</div>
             </div>
+            <h4 class="top-articles-header">Top Articles</h4>
+            <ol class="top-articles">
+                <li th:each="article : ${topArticles}" class="nav-item">
+                    <a th:text="${article.aspects.contentData.data.title}" th:href="${curl.create(article.id)}"
+                       href="#">Article link...</a>
+                </li>
+            </ol>
         </div>
     </div>
 
