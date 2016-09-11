@@ -29,7 +29,10 @@
                 By <span th:text="${article.aspects.contentData.data.byline}"></span>
             </div>
             <time th:unless="${utils.isEmpty(article, 'aspects.contentData.data.published')}" th:datetime="${date.iso8601(article.aspects.contentData.data.published)}" th:utext="${date.full(article.aspects.contentData.data.published)}">Publish date...</time>
-            <p class="lead" th:utext="${article.aspects.contentData.data.lead}">Article lead...</p>
+            <div class="lead">
+                <span class="section-title" th:text="${section.aspects.contentData.data.title}">Section title...</span>
+                <span th:utext="${article.aspects.contentData.data.lead}">Article lead...</span>
+            </div>
             <ul class="tags" th:unless="${utils.isEmpty(article, 'aspects.contentData.data.tags')}">
                 <li th:each="tag : ${article.aspects.contentData.data.tags}" th:text="${tag}">
                     Tag...

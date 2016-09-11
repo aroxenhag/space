@@ -113,6 +113,16 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom: 1px solid #E5E5E5;
 }
 
+.article .lead .section-title {
+  display: inline-block;
+  border-left: 6px solid #0288D1;
+  padding-left: 4px;
+  margin-right: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 .article .tags {
   list-style-type: none;
   padding: 0 0 14px;
