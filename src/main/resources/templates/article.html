@@ -14,8 +14,16 @@
 
     <div class="row">
         <div class="col-md-9 article">
-            <img th:unless="${utils.isEmpty(article, 'aspects.contentData.data.imageRef')}"
-                 th:src="${iurl.create(article.aspects.contentData.data.imageRef)}"/>
+            <div class="image" th:with="image=${contentApi.content(article.aspects.contentData.data.imageRef)}" th:unless="${utils.isEmpty(article, 'aspects.contentData.data.imageRef')}">
+                <div class="image-container">
+                    <img th:src="${iurl.create(image.id)}"/>
+                </div>
+                <div class="image-meta">
+                    <span class="image-caption" th:text="*{image.aspects.contentData.data.description}?: 'no caption'"></span>
+                    <span class="image-byline" th:text="*{image.aspects.contentData.data.byline}?: 'no byline'"></span>
+                </div>
+            </div>
+
             <h1 th:text="${article.aspects.contentData.data.title}">Article headline...</h1>
             <div class="byline" th:unless="${utils.isEmpty(article, 'aspects.contentData.data.byline')}">
                 By <span th:text="${article.aspects.contentData.data.byline}"></span>
