@@ -9,32 +9,35 @@
   Header content...
 </div>
 
-<div class="container">
+<div class="container section-page">
 
     <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-9 main-col">
+            <div class="empty" th:if="${utils.isEmpty(rows)}">
+                This section appears to be empty
+            </div>
             <div th:each="row : ${rows}" class="row">
                 <a th:each="teaser : ${row}" th:class="'teaser col-md-' + 12 / ${row.size()}" th:href="${curl.create(teaser.id)}">
                     <img th:unless="${utils.isEmpty(teaser, 'aspects.contentData.data.imageRef')}" th:src="${iurl.create(teaser.aspects.contentData.data.imageRef)}" />
-                    <h2 th:text="${teaser.aspects.contentData.data.title}" th:title="${teaser.id}">Teaser headline</h2>
-                    <p class="lead" th:text="${teaser.aspects.contentData.data.lead}">Teaser text...</p>
+                    <h2 th:text="${teaser.aspects.contentData.data.title}" th:title="${teaser.id}">Teaser headline...</h2>
+                    <div class="lead">
+                        <time th:unless="${utils.isEmpty(teaser, 'aspects.contentData.data.published')}" th:utext="${date.time(teaser.aspects.contentData.data.published)}">Teaser date...</time>
+                        <p th:text="${teaser.aspects.contentData.data.lead}">Teaser text...</p>
+                    </div>
                 </a>
             </div>
         </div>
         <div class="col-md-3">
             <div class="ad-placeholder">
-                <div>AD</div>
+                <div>THIS IS AD</div>
             </div>
         </div>
     </div>
 
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <span class="text-muted" th:text="'&copy; ' + ${site.aspects.contentData.data.title}">Copyright notice</span>
-        <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS. A fixed navbar has been added with <code>padding-top: 60px;</code> on the <code>body &gt; .container</code>.</p>
-    </div>
+<footer class="footer" th:include="_footer :: footer">
+    Footer content...
 </footer>
 
 </body>

@@ -8,9 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -91,11 +95,12 @@ public class DispatcherController {
         }
         model.put("rows", rows);
 
-        // Add generic tools
+        // Add generic utilities
         model.put("curl", new ContentUrlCreator(contentApi));
         model.put("iurl", new ImageUrlCreator("http://localhost:8080/image", contentApi));
         model.put("contentApi", contentApi);
         model.put("utils", new Utils());
+        model.put("date", new DateUtil());
 
         if (article != null) {
             return "article";
@@ -119,6 +124,24 @@ public class DispatcherController {
         String[] path = ((String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE)).split("/");
         return Arrays.asList(Arrays.copyOfRange(path, 1, path.length));
+    }
+
+    class DateUtil {
+        public String time(Long time) {
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+            return sdf.format(new Date(time));
+        }
+
+        public String full(Long time) {
+            SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy • hh:mma");
+            return sdf.format(new Date(time));
+        }
+
+        public String iso8601(Long time) {
+            Calendar calendar = GregorianCalendar.getInstance();
+            calendar.setTimeInMillis(time);
+            return javax.xml.bind.DatatypeConverter.printDateTime(calendar);
+        }
     }
 
     class Utils {

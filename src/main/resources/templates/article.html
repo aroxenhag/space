@@ -16,17 +16,19 @@
         <div class="col-md-9 article">
             <img th:unless="${utils.isEmpty(article, 'aspects.contentData.data.imageRef')}"
                  th:src="${iurl.create(article.aspects.contentData.data.imageRef)}"/>
-            <h1 th:text="${article.aspects.contentData.data.title}">To replace...</h1>
-            <p class="lead" th:utext="${article.aspects.contentData.data.lead}">To replace...</p>
+            <h1 th:text="${article.aspects.contentData.data.title}">Article headline...</h1>
+            <time th:unless="${utils.isEmpty(article, 'aspects.contentData.data.published')}" th:datetime="${date.iso8601(article.aspects.contentData.data.published)}" th:utext="${date.full(article.aspects.contentData.data.published)}">Publish date...</time>
+            <p class="lead" th:utext="${article.aspects.contentData.data.lead}">Article lead...</p>
             <ul class="tags" th:unless="${utils.isEmpty(article, 'aspects.contentData.data.tags')}">
                 <li th:each="tag : ${article.aspects.contentData.data.tags}" th:text="${tag}">
+                    Tag...
                 </li>
             </ul>
-            <div th:utext="${article.aspects.contentData.data.body}">To replace...</div>
+            <div th:utext="${article.aspects.contentData.data.body}">Article body...</div>
         </div>
         <div class="col-md-3">
             <div class="ad-placeholder">
-                <div>AD</div>
+                <div>THIS IS AD</div>
             </div>
             <h4 class="top-articles-header">Top Articles</h4>
             <ol class="top-articles">
@@ -39,10 +41,8 @@
     </div>
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <span class="text-muted" th:text="'&copy; ' + ${site.aspects.contentData.data.title}">Copyright notice...</span>
-    </div>
+<footer class="footer" th:include="_footer :: footer">
+    Footer content...
 </footer>
 
 </body>
