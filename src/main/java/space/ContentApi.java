@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@FeignClient(name = "content-api", url = "http://localhost:8080/ace")
+@FeignClient(name = "content-api", url = "${content-api-base-url}")
 interface ContentApi {
 
     default Map<String, Object> content(String alias, String id) {

@@ -2,6 +2,7 @@ package space;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,9 @@ public class DispatcherController {
 
     @Autowired
     private ContentApi contentApi;
+
+    @Value("${image-service-base-url}")
+    private String imageServiceBaseUrl;
 
     @RequestMapping(value = "{path:(?!static|error).*$}/**")
     public String dispatch(HttpServletRequest request, Map<String, Object> model) {
@@ -97,7 +101,7 @@ public class DispatcherController {
 
         // Add generic utilities
         model.put("curl", new ContentUrlCreator(contentApi));
-        model.put("iurl", new ImageUrlCreator("http://localhost:8080/image", contentApi));
+        model.put("iurl", new ImageUrlCreator(contentApi));
         model.put("contentApi", contentApi);
         model.put("utils", new Utils());
         model.put("date", new DateUtil());
@@ -177,11 +181,9 @@ public class DispatcherController {
     }
 
     class ImageUrlCreator {
-        private String baseUrl;
         private ContentApi contentApi;
 
-        public ImageUrlCreator(String baseUrl, ContentApi contentApi) {
-            this.baseUrl = baseUrl;
+        public ImageUrlCreator(ContentApi contentApi) {
             this.contentApi = contentApi;
         }
 
@@ -190,7 +192,7 @@ public class DispatcherController {
             if (contentApi.isSymbolicId(id)) {
                 id = contentApi.translateSymbolicId(id);
             }
-            return baseUrl + "/" + id + "/image.jpg?a=2:1";
+            return imageServiceBaseUrl + "/" + id + "/image.jpg?a=2:1";
         }
     }
 }
