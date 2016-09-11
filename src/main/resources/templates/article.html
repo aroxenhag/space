@@ -17,6 +17,9 @@
             <img th:unless="${utils.isEmpty(article, 'aspects.contentData.data.imageRef')}"
                  th:src="${iurl.create(article.aspects.contentData.data.imageRef)}"/>
             <h1 th:text="${article.aspects.contentData.data.title}">Article headline...</h1>
+            <div class="byline" th:unless="${utils.isEmpty(article, 'aspects.contentData.data.byline')}">
+                By <span th:text="${article.aspects.contentData.data.byline}"></span>
+            </div>
             <time th:unless="${utils.isEmpty(article, 'aspects.contentData.data.published')}" th:datetime="${date.iso8601(article.aspects.contentData.data.published)}" th:utext="${date.full(article.aspects.contentData.data.published)}">Publish date...</time>
             <p class="lead" th:utext="${article.aspects.contentData.data.lead}">Article lead...</p>
             <ul class="tags" th:unless="${utils.isEmpty(article, 'aspects.contentData.data.tags')}">
