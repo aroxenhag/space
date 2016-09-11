@@ -21,6 +21,7 @@ interface ContentApi {
     @RequestMapping(method = RequestMethod.GET, value = "/content/{aliasandid}")
     Map<String, Object> content(@RequestParam("aliasandid") String id);
 
+    @Cacheable("search")
     @RequestMapping(method = RequestMethod.GET, value = "/search/onecms/select?q={q}&wt=json&rows=20&sort=modificationTime+desc")
     Map<String, Object> search(@RequestParam("q") String q);
 
