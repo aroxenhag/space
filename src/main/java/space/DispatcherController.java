@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,20 +31,34 @@ public class DispatcherController {
     @Value("${image-service-base-url}")
     private String imageServiceBaseUrl;
 
+    @RequestMapping(value = "/about/{tag}")
+    public String about(@PathVariable("tag") String tag, HttpServletRequest request, Map<String, Object> model) {
+        Map<String, Object> result = contentApi.search("tag_ss:" + tag);
+        System.out.println(result);
+        return "landing";
+    }
+
+    @RequestMapping(value = "/by/{tag}")
+    public String by(HttpServletRequest request, Map<String, Object> model) {
+        return "landing";
+    }
+
     @RequestMapping(value = "{path:(?!css|wro4j|static|error).*$}/**")
     public String dispatch(HttpServletRequest request, Map<String, Object> model) {
 
+        // Get content path
         List<String> friendlyAliasPath = getFriendlyAliasPath(request);
         List<String> contentPath = new ArrayList<>();
         friendlyAliasPath.forEach(s -> {
             contentPath.add("friendly/" + s);
         });
 
+        // Get contents for content path
         List<Map<String, Object>> contents = contentApi.batch(contentPath);
 
+        // Get site and section from contents in content path
         Map<String, Object> site = contents.get(0);
         model.put("site", site);
-
         Map<String, Object> section = site;
         Map<String, Object> article = null;
         for (Map content : contents) {
@@ -56,7 +72,7 @@ public class DispatcherController {
         model.put("section", section);
         model.put("article", article);
 
-        // Get all sections
+        // Get all top level sections for navigation
         List sectionIds = (List) ContentMapUtil.getObject(site, "aspects.contentData.data.sections");
         List<Map<String, Object>> sections = new ArrayList<>();
         if (sectionIds != null) {
@@ -66,21 +82,21 @@ public class DispatcherController {
         }
         model.put("sections", sections);
 
+
+        List<String> siteSubSectionIds = new ArrayList<>();
+        addAllSubSectionIds(contentApi, site, siteSubSectionIds);
+        Map siteArticlesResult = contentApi.search("type:article AND parentId_s:(" + String.join(" ", siteSubSectionIds) + ")");
+        List<Map<String, Object>> siteTopArticles = getArticlesForResult(siteArticlesResult);
+        model.put("articles", siteTopArticles);
+
         // Get most recent articles for current section (and its subsections)
         // NOTE: Since it's har to index the parent chain, we expand the query instead
         // NOTE: Since the parent ids are the uuids that are never resoved to real ids,
         // we have to use the uuids here.
-        List<String> allSubSectionIds = new ArrayList<>();
-        addAllSubSectionIds(contentApi, section, allSubSectionIds);
-
-        Map searchResult = contentApi.search("type:article AND parentId_s:(" + String.join(" ", allSubSectionIds) + ")");
-        List docs = (List) ContentMapUtil.getObject(searchResult, "response.docs");
-        List<Map<String, Object>> articles = new ArrayList<>();
-        docs.forEach(doc -> {
-            String articleId = ContentMapUtil.getString((Map<String, Object>) doc, "id");
-            articles.add(contentApi.content("contentid", articleId));
-        });
-        model.put("articles", articles);
+        List<String> currentSectionSubSectionIds = new ArrayList<>();
+        addAllSubSectionIds(contentApi, section, currentSectionSubSectionIds);
+        Map currentSectionArticlesResult = contentApi.search("type:article AND parentId_s:(" + String.join(" ", currentSectionSubSectionIds) + ")");
+        List<Map<String, Object>> sectionArticles = getArticlesForResult(currentSectionArticlesResult);
 
         // Build layout
         List<Integer> layoutConfig = Arrays.asList(new Integer[]{1, 2, 1, 4, 3});
@@ -90,10 +106,10 @@ public class DispatcherController {
         for (int cols : layoutConfig) {
             List<Map<String, Object>> rowContent = new ArrayList<>();
             for (int i = 0; i < cols; i++) {
-                if (articleIndex >= articles.size()) {
+                if (articleIndex >= sectionArticles.size()) {
                     break outer;
                 }
-                rowContent.add(articles.get(articleIndex++));
+                rowContent.add(sectionArticles.get(articleIndex++));
             }
             rows.add(rowContent);
         }
@@ -106,11 +122,22 @@ public class DispatcherController {
         model.put("utils", new Utils());
         model.put("date", new DateUtil());
 
+        // Dispatch to correct template based on type
         if (article != null) {
             return "article";
         } else {
             return "section";
         }
+    }
+
+    private List<Map<String, Object>> getArticlesForResult(Map currentSectionArticlesResult) {
+        List docs = (List) ContentMapUtil.getObject(currentSectionArticlesResult, "response.docs");
+        List<Map<String, Object>> articles = new ArrayList<>();
+        docs.forEach(doc -> {
+            String articleId = ContentMapUtil.getString((Map<String, Object>) doc, "id");
+            articles.add(contentApi.content("contentid", articleId));
+        });
+        return articles;
     }
 
     private void addAllSubSectionIds(ContentApi contentApi, Map<String, Object> section, List<String> allSectionIds) {
