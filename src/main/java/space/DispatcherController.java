@@ -29,7 +29,7 @@ public class DispatcherController {
     @Value("${image-service-base-url}")
     private String imageServiceBaseUrl;
 
-    @RequestMapping(value = "{path:(?!static|error).*$}/**")
+    @RequestMapping(value = "{path:(?!wro4j|static|error).*$}/**")
     public String dispatch(HttpServletRequest request, Map<String, Object> model) {
 
         List<String> friendlyAliasPath = getFriendlyAliasPath(request);
