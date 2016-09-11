@@ -40,12 +40,13 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
 }
 
+@link-color: rgb(55, 58, 60);
 .space a {
-  color: rgb(55, 58, 60);
+  color: @link-color;
 }
 
 .space a:hover {
-  color: rgb(55, 58, 60);
+  color: lighten(@link-color, 20%);
   text-decoration: none;
 }
 

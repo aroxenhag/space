@@ -44,6 +44,11 @@
             <version>0.1.1</version>
         </dependency>
         <dependency>
+            <groupId>ro.isdc.wro4j</groupId>
+            <artifactId>wro4j-extensions</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+        <dependency>
             <groupId>net.sourceforge.nekohtml</groupId>
             <artifactId>nekohtml</artifactId>
             <version>1.9.22</version>
