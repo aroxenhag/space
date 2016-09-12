@@ -38,9 +38,11 @@ public class DispatcherController {
         return dispatch(request, model, Arrays.asList("friendly/" + site), articles);
     }
 
-    @RequestMapping(value = "/by/{author}")
-    public String by(HttpServletRequest request, Map<String, Object> model) {
-        return "NOT IMPLEMENTED";
+    @RequestMapping(value = "/{site}/by/{author}")
+    public String by(@PathVariable("site") String site, @PathVariable("author") String author, HttpServletRequest request, Map<String, Object> model) {
+        Map<String, Object> result = contentApi.search("byline_s:" + author);
+        List<Map<String, Object>> articles = getArticlesForResult(result);
+        return dispatch(request, model, Arrays.asList("friendly/" + site), articles);
     }
 
     @RequestMapping(value = "{path:(?!css|wro4j|static|error).*$}/**")

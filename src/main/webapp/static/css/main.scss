@@ -155,8 +155,13 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 5px;
 }
 
-.article .byline span {
+.article .byline a {
   font-weight: 700;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.article .byline a:hover {
+  color: lighten(rgba(0, 0, 0, 0.6), 10%);
 }
 
 .article time {

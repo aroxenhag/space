@@ -26,7 +26,7 @@
 
             <h1 th:text="${article.aspects.contentData.data.title}">Article headline...</h1>
             <div class="byline" th:unless="${utils.isEmpty(article, 'aspects.contentData.data.byline')}">
-                By <span th:text="${article.aspects.contentData.data.byline}"></span>
+                By <a href="#" th:href="${lpage.create(site, 'by', article.aspects.contentData.data.byline)}" th:text="${article.aspects.contentData.data.byline}"></a>
             </div>
             <time th:unless="${utils.isEmpty(article, 'aspects.contentData.data.published')}" th:datetime="${date.iso8601(article.aspects.contentData.data.published)}" th:utext="${date.full(article.aspects.contentData.data.published)}">Publish date...</time>
             <div class="lead">
