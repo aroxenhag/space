@@ -38,7 +38,7 @@
                     <a href="#" th:href="${lpage.create(site, 'about', tag)}" th:text="${tag}">Tag...</a>
                 </li>
             </ul>
-            <div th:utext="${article.aspects.contentData.data.body}">Article body...</div>
+            <div class="body" th:utext="${article.aspects.contentData.data.body}">Article body...</div>
         </div>
         <div class="col-md-3">
             <div class="ad-placeholder">
