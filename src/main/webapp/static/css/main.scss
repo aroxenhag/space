@@ -233,6 +233,10 @@ img {
   font-size: 1.188rem;
 }
 
+.teaser.col-md-4 .lead, .teaser.col-md-3 .lead {
+  font-size: 1.0rem;
+}
+
 .teaser .lead p {
   display: inline;
 }
@@ -257,11 +261,17 @@ img {
 .col-md-12 h2 {
   font-size: 44px;
 }
+
 .col-md-6 h2 {
   font-size: 32px;
 }
-.col-md-4 h2, .col-md-3 h2 {
-  font-size: 22px;
+
+.col-md-4 h2 {
+  font-size: 20px;
+}
+
+.col-md-3 h2 {
+  font-size: 18px;
 }
 
 .space .footer {
