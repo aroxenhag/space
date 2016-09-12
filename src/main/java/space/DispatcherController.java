@@ -185,6 +185,11 @@ public class DispatcherController {
             return sdf.format(new Date(time));
         }
 
+        public String medium(Long time) {
+            SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy, h:mma");
+            return sdf.format(new Date(time));
+        }
+
         public String iso8601(Long time) {
             Calendar calendar = GregorianCalendar.getInstance();
             calendar.setTimeInMillis(time);

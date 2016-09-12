@@ -33,11 +33,12 @@
             <div class="ad-placeholder">
                 <div>THIS IS AD</div>
             </div>
-            <h4 class="top-articles-header">Top Articles</h4>
+            <h4 class="top-articles-header">Latest News</h4>
             <ol class="top-articles">
-                <li th:each="article : ${topArticles}" class="nav-item">
+                <li th:each="article, stat : ${topArticles}" class="nav-item" th:unless="${stat.index >= 10}">
                     <a th:text="${article.aspects.contentData.data.title}" th:href="${curl.create(article.id)}"
                        href="#">Article link...</a>
+                    <time th:unless="${utils.isEmpty(article, 'aspects.contentData.data.published')}" th:datetime="${date.medium(article.aspects.contentData.data.published)}" th:utext="${date.full(article.aspects.contentData.data.published)}">Publish date...</time>
                 </li>
             </ol>
         </div>
