@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <groups xmlns="http://www.isdc.ro/wro">
     <group name="main">
-        <css>/static/css/main.scss</css>
+        <css>/static/css/main.less</css>
     </group>
 </groups>
