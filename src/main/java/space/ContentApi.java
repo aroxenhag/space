@@ -22,7 +22,7 @@ interface ContentApi {
     Map<String, Object> content(@RequestParam("aliasandid") String id);
 
     @Cacheable("search")
-    @RequestMapping(method = RequestMethod.GET, value = "/search/onecms/select?q={q}&wt=json&rows=20&sort=modificationTime+desc")
+    @RequestMapping(method = RequestMethod.GET, value = "/search/onecms/select?q={q}&wt=json&rows=20&sort=publishDate_dt+desc")
     Map<String, Object> search(@RequestParam("q") String q);
 
     default List<Map<String, Object>> batch(List<String> ids) {
