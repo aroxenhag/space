@@ -41,17 +41,8 @@
             <div class="body" th:utext="${article.aspects.contentData.data.body}">Article body...</div>
         </div>
         <div class="col-md-3">
-            <div class="ad-placeholder">
-                <div>THIS IS AD</div>
-            </div>
-            <h4 class="top-articles-header">Latest News</h4>
-            <ol class="top-articles">
-                <li th:each="article, stat : ${topArticles}" class="nav-item" th:unless="${stat.index >= 10}">
-                    <a th:text="${article.aspects.contentData.data.title}" th:href="${curl.create(article.id)}"
-                       href="#">Article link...</a>
-                    <time th:unless="${utils.isEmpty(article, 'aspects.contentData.data.published')}" th:datetime="${date.medium(article.aspects.contentData.data.published)}" th:utext="${date.full(article.aspects.contentData.data.published)}">Publish date...</time>
-                </li>
-            </ol>
+            <div th:replace="_ad">AD...</div>
+            <div th:replace="_article-list :: .article-list">Article top list...</div>
         </div>
     </div>
 </div>
