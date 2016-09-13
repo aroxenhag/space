@@ -35,6 +35,7 @@ public class DispatcherController {
     public String about(@PathVariable("site") String site, @PathVariable("tag") String tag, HttpServletRequest request, Map<String, Object> model) {
         Map<String, Object> result = contentApi.search("tag_ss:" + tag);
         List<Map<String, Object>> articles = getArticlesForResult(result);
+        model.put("metaEntity", tag);
         return dispatch(request, model, Arrays.asList("friendly/" + site), articles);
     }
 
@@ -42,6 +43,7 @@ public class DispatcherController {
     public String by(@PathVariable("site") String site, @PathVariable("author") String author, HttpServletRequest request, Map<String, Object> model) {
         Map<String, Object> result = contentApi.search("byline_s:" + author);
         List<Map<String, Object>> articles = getArticlesForResult(result);
+        model.put("metaEntity", author);
         return dispatch(request, model, Arrays.asList("friendly/" + site), articles);
     }
 
