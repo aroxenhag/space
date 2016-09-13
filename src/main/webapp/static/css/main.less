@@ -9,17 +9,51 @@
 @secondaryTextColor: #757575;
 @dividerColor:       #BDBDBD;
 
+
 .space .navbar {
   background-color: #fff;
   border-bottom: 1px solid #E5E5E5;
 }
 
 .navbar-right {
-  float: right;
   text-transform: uppercase;
   font-weight: 300;
-  position: relative;
-  top: 4px;
+}
+
+.navbar-brand {
+  float: none;
+  font-family: 'Rokkitt', serif;
+  font-weight: 800;
+  font-size: 1.6rem;
+  padding: .45rem 0 0;
+  line-height: 2.0rem;
+}
+
+
+/* Breakpoints */
+@media (min-width:544px) {
+  .navbar-right {
+    float: right;
+    position: relative;
+    top: 4px;
+  }
+
+  .navbar-brand {
+    float: left;
+    font-size: 2.4rem;
+  }
+}
+
+@media (min-width:768px) {
+  .navbar-brand {
+    font-size: 2.4rem;
+  }
+}
+
+@media (min-width:992px) {
+}
+
+@media (min-width:1200px) {
 }
 
 body.space > .container {
@@ -208,18 +242,6 @@ h1, h2, h3, h4, h5, h6 {
 .article .body a:hover {
   background-color: #B3E5FC;
   color: inherit;
-}
-
-.navbar-brand {
-  font-family: 'Rokkitt', serif;
-  font-weight: 800;
-  font-size: 2.4rem;
-  padding: .45rem 0 0;
-/*
-  font-size: 2.0rem;
-  padding: .25rem 0 0;
-*/
-  line-height: 2.0rem;
 }
 
 .ad-placeholder {
