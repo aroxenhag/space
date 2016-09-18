@@ -64,6 +64,11 @@ public class DispatcherController {
         // Get contents for content path
         List<Map<String, Object>> contents = contentApi.batch(contentPath);
         model.put("pathContents", contents);
+        List<String> pathIds = new ArrayList<>();
+        for (Map<String, Object> content : contents) {
+            pathIds.add(ContentMapUtil.getId(content));
+        }
+        model.put("pathIds", pathIds);
 
         // Get site and section from contents in content path
         Map<String, Object> site = contents.get(0);

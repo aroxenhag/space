@@ -21,6 +21,10 @@ public class ContentMapUtil {
         return tmpMap.get(keys.get(keys.size() - 1));
     }
 
+    public static String getId(Map<String, Object> map) {
+        return getString(map, "id");
+    }
+
     public static String getType(Map<String, Object> map) {
         return getString(map, "aspects.contentData.data._type");
     }
