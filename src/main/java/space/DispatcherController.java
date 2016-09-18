@@ -63,6 +63,7 @@ public class DispatcherController {
     private String dispatch(HttpServletRequest request, Map<String, Object> model, List<String> contentPath, List<Map<String, Object>> articles) {
         // Get contents for content path
         List<Map<String, Object>> contents = contentApi.batch(contentPath);
+        model.put("pathContents", contents);
 
         // Get site and section from contents in content path
         Map<String, Object> site = contents.get(0);
