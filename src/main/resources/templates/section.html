@@ -41,7 +41,7 @@
                         </a>
                     </th:block>
                     <th:block th:case="'carousel'">
-                        <div th:id="'carousel-' + ${rowstat.index}" data-interval="false" class="carousel slide col-md-12" data-ride="carousel">
+                        <div th:id="'carousel-' + ${rowstat.index}" class="carousel slide col-md-12" data-ride="carousel">
                             <ol class="carousel-indicators">
                                 <th:block th:each="teaser, colstat : ${row.content}">
                                   <li th:attr="data-target=#'carousel-' + ${rowstat.index}" th:attr="data-target='carousel-' + ${rowstat.index},data-slide-to=${colstat.index}" th:classappend="${colstat.index == 0} ? active"></li>
