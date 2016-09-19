@@ -12,8 +12,10 @@
 
     <script>
     var updateAds = function() {
-      var ad = $(".ad-placeholder");
-      ad.find("div").text(ad.width() + " x " + ad.height());
+      $(".ad-placeholder").each(function() {
+        var ad = $(this);
+        ad.find("div").text(ad.width() + " x " + ad.outerHeight());
+      });
     };
     $(window).on("resize", updateAds);
     $(document).ready(updateAds);

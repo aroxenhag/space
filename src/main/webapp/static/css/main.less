@@ -246,18 +246,26 @@ h1, h2, h3, h4, h5, h6 {
 
 .ad-placeholder {
   background-color: #B3E5FC;
-  height: 360px;
   color: rgba(255, 255, 255, .8);
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #E5E5E5;
-  margin-bottom: 40px;
+}
+
+.main-col .ad-placeholder {
+  height: 160px;
+}
+
+.right-col .ad-placeholder {
+  height: 360px;
 }
 
 .ad-placeholder > * {
   text-align: center;
+}
+
+.right-col > * {
+  margin-bottom: 20px;
 }
 
 img {
