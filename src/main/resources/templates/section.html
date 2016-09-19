@@ -50,9 +50,8 @@
                             <div class="carousel-inner" role="listbox">
                                 <div th:each="teaser, colstat : ${row.content}" class="carousel-item" th:classappend="${colstat.index == 0} ? active">
                                     <a class="teaser" th:href="${curl.create(teaser.id)}">
-                                        <div class="image-container"
-                                             th:unless="${utils.isEmpty(teaser, 'aspects.contentData.data.imageRef')}">
-                                            <img th:src="${iurl.create(teaser.aspects.contentData.data.imageRef)}"/>
+                                        <div class="image-container">
+                                            <img th:unless="${utils.isEmpty(teaser, 'aspects.contentData.data.imageRef')}" th:src="${iurl.create(teaser.aspects.contentData.data.imageRef)}"/>
                                         </div>
                                         <div class="teaser-text">
                                             <h2 th:text="${teaser.aspects.contentData.data.title}">Teaser

@@ -357,6 +357,21 @@ img {
   background: none;
 }
 
+.carousel-inner {
+  position: relative;
+  padding-bottom: 50%; /* 2:1 ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.carousel-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .carousel .teaser {
   display: block;
   position: relative;
