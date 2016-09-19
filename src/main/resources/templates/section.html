@@ -6,7 +6,7 @@
 <body class="space">
 
 <div class="pos-f-t" th:include="_header :: div.pos-f-t">
-  Header content...
+    Header content...
 </div>
 
 <div class="container section-page">
@@ -17,20 +17,33 @@
             <div class="empty" th:if="${utils.isEmpty(rows)}">
                 This section appears to be empty
             </div>
+
             <div th:each="row : ${rows}" class="row">
-                <a th:each="teaser : ${row}" th:class="'teaser col-md-' + 12 / ${row.size()}" th:href="${curl.create(teaser.id)}">
-                    <div class="image-container" th:unless="${utils.isEmpty(teaser, 'aspects.contentData.data.imageRef')}">
-                        <img th:src="${iurl.create(teaser.aspects.contentData.data.imageRef)}" />
-                    </div>
-                    <h2 th:text="${teaser.aspects.contentData.data.title}" th:title="${teaser.id}">Teaser headline...</h2>
-                    <div class="lead">
-                        <time th:unless="${utils.isEmpty(teaser, 'aspects.contentData.data.published')}" th:utext="${date.time(teaser.aspects.contentData.data.published)}">Teaser date...</time>
-                        <p th:text="${teaser.aspects.contentData.data.lead}">Teaser text...</p>
-                    </div>
-                </a>
+                <th:block th:switch="${row.type}">
+                    <th:block th:case="'ad'">
+                        <div th:replace="_ad">AD...</div>
+                    </th:block>
+                    <th:block th:case="'cols'">
+                        <a th:each="teaser : ${row.content}"
+                           th:class="'teaser col-md-' + 12 / ${row.content.size()}" th:href="${curl.create(teaser.id)}">
+                            <div class="image-container"
+                                 th:unless="${utils.isEmpty(teaser, 'aspects.contentData.data.imageRef')}">
+                                <img th:src="${iurl.create(teaser.aspects.contentData.data.imageRef)}"/>
+                            </div>
+                            <h2 th:text="${teaser.aspects.contentData.data.title}" th:title="${teaser.id}">Teaser
+                                headline...</h2>
+                            <div class="lead">
+                                <time th:unless="${utils.isEmpty(teaser, 'aspects.contentData.data.published')}"
+                                      th:utext="${date.time(teaser.aspects.contentData.data.published)}">Teaser date...
+                                </time>
+                                <p th:text="${teaser.aspects.contentData.data.lead}">Teaser text...</p>
+                            </div>
+                        </a>
+                    </th:block>
+                </th:block>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 right-col">
             <div th:replace="_ad">AD...</div>
             <div th:replace="_article-list :: .article-list">Article top list...</div>
         </div>

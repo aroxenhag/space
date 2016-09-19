@@ -18,8 +18,11 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 @EnableFeignClients
@@ -117,10 +120,26 @@ public class DispatcherController {
 
         // Build layout
         List<Integer> layoutConfig = Arrays.asList(new Integer[]{1, 2, 1, 4, 3});
+        String layoutConfigStr = ContentMapUtil.getString(section, "aspects.contentData.data.layoutConfig");
+        String adsConfigStr = ContentMapUtil.getString(section, "aspects.contentData.data.adsConfig");
+        if (StringUtils.isEmpty(adsConfigStr)) {
+            adsConfigStr = "2, 4, 7, 8, 9, 11, 12";
+        }
+        Set<Integer> adsConfig = new HashSet<>();
+        for (String adPosition : adsConfigStr.split(",")) {
+            adsConfig.add(Integer.parseInt(adPosition.trim()));
+        }
+
         int articleIndex = 0;
-        List<List<Map<String, Object>>> rows = new ArrayList<>();
+        int rowIndex = 1;
+        List<Map<String, Object>> rows = new ArrayList<>();
         outer:
         for (int cols : layoutConfig) {
+            if (adsConfig.contains(rowIndex)) {
+                Map<String, Object> rowConfig = new HashMap<>();
+                rowConfig.put("type", "ad");
+                rows.add(rowConfig);
+            }
             List<Map<String, Object>> rowContent = new ArrayList<>();
             for (int i = 0; i < cols; i++) {
                 if (articleIndex >= pageArticles.size()) {
@@ -128,7 +147,11 @@ public class DispatcherController {
                 }
                 rowContent.add(pageArticles.get(articleIndex++));
             }
-            rows.add(rowContent);
+            Map<String, Object> rowConfig = new HashMap<>();
+            rowConfig.put("type", "cols");
+            rowConfig.put("content", rowContent);
+            rows.add(rowConfig);
+            rowIndex++;
         }
         model.put("rows", rows);
 
@@ -153,7 +176,7 @@ public class DispatcherController {
         List<Map<String, Object>> articles = new ArrayList<>();
         docs.forEach(doc -> {
             String articleId = ContentMapUtil.getString((Map<String, Object>) doc, "id");
-            articles.add(contentApi.content("contentid", articleId));
+            articles.add(contentApi.content("contentid" + "/" + articleId));
         });
         return articles;
     }
