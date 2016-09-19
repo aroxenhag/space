@@ -119,11 +119,14 @@ public class DispatcherController {
         }
 
         // Build layout
-        List<Integer> layoutConfig = Arrays.asList(new Integer[]{1, 2, 1, 4, 3});
         String layoutConfigStr = ContentMapUtil.getString(section, "aspects.contentData.data.layoutConfig");
+        if (StringUtils.isEmpty((layoutConfigStr))) {
+            layoutConfigStr = "1, 3, 1, 2, 3*, 4, 3, 1, 2, 3, 4";
+        }
+        List<String> layoutConfig = Arrays.asList(layoutConfigStr.split(","));
         String adsConfigStr = ContentMapUtil.getString(section, "aspects.contentData.data.adsConfig");
         if (StringUtils.isEmpty(adsConfigStr)) {
-            adsConfigStr = "2, 4, 7, 8, 9, 11, 12";
+            adsConfigStr = "2, 4, 7, 8, 9, 12, 15";
         }
         Set<Integer> adsConfig = new HashSet<>();
         for (String adPosition : adsConfigStr.split(",")) {
@@ -134,21 +137,30 @@ public class DispatcherController {
         int rowIndex = 1;
         List<Map<String, Object>> rows = new ArrayList<>();
         outer:
-        for (int cols : layoutConfig) {
+        for (String rowConfigStr : layoutConfig) {
             if (adsConfig.contains(rowIndex)) {
                 Map<String, Object> rowConfig = new HashMap<>();
                 rowConfig.put("type", "ad");
                 rows.add(rowConfig);
             }
+            rowConfigStr = rowConfigStr.trim();
+
+            Map<String, Object> rowConfig = new HashMap<>();
+            int articleCount = -1;
+            if (rowConfigStr.endsWith("*")) {
+                articleCount = Integer.parseInt(rowConfigStr.substring(0, rowConfigStr.length() - 1));
+                rowConfig.put("type", "carousel");
+            } else {
+                articleCount = Integer.parseInt(rowConfigStr);
+                rowConfig.put("type", "cols");
+            }
             List<Map<String, Object>> rowContent = new ArrayList<>();
-            for (int i = 0; i < cols; i++) {
+            for (int i = 0; i < articleCount; i++) {
                 if (articleIndex >= pageArticles.size()) {
                     break outer;
                 }
                 rowContent.add(pageArticles.get(articleIndex++));
             }
-            Map<String, Object> rowConfig = new HashMap<>();
-            rowConfig.put("type", "cols");
             rowConfig.put("content", rowContent);
             rows.add(rowConfig);
             rowIndex++;

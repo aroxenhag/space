@@ -299,10 +299,6 @@ img {
   display: inline;
 }
 
-.row {
-  margin-bottom: 20px;
-}
-
 .meta-entity {
   font-size: 26px;
   padding-left: 14px;
@@ -322,9 +318,15 @@ img {
 }
 
 .section-page .main-col .row {
-  padding-bottom: 1.5rem;
+  padding-bottom: 1.9rem;
   margin-bottom: 1.9rem;
   border-bottom: 1px solid #d5d5d5;
+}
+
+.section-page .main-col .row:last-child {
+  padding-bottom: 1.9rem;
+  margin-bottom: none;
+  border-bottom: none;
 }
 
 .col-md-12 h2 {
@@ -350,6 +352,49 @@ img {
 .copyright {
   color: rgba(0, 0, 0, 0.4);
 }
+
+.carousel .carousel-control {
+  background: none;
+}
+
+.carousel .teaser {
+  display: block;
+  position: relative;
+}
+
+.carousel .carousel-control {
+  color: rgba(255, 255, 255, .9);
+}
+
+.carousel .carousel-control:hover {
+  color: rgba(255, 255, 255, 1.0);
+}
+
+.carousel-control .icon-next, .carousel-control .icon-prev {
+  width: 60px;
+  height: 60px;
+  margin-top: -45px;
+  font-size: 60px;
+}
+
+.carousel .teaser .teaser-text {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  right: 160px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, .8);
+}
+
+.carousel .teaser .teaser-text {
+  color: #000;
+}
+
+.carousel .teaser .teaser-text h2 {
+  font-size: 24px;
+  margin-bottom: 0;
+}
+
 
 /* Sticky footer styles
 -------------------------------------------------- */
