@@ -20,9 +20,11 @@
             <div class="collapse navbar-toggleable-xs" id="exCollapsingNavbar2">
                 <a th:text="${site.aspects.contentData.data.title}" class="navbar-brand" th:href="${curl.create(site.id)}" href="#">Navbar brand</a>
                 <ul class="nav navbar-nav navbar-right">
-                    <li th:each="section : ${sections}" class="nav-item" th:classappend="${pathIds.contains(section.id)} ? active">
-                        <a th:text="${section.aspects.contentData.data.title}" th:href="${curl.create(section.id)}" class="nav-link" href="#">Section link</a>
-                    </li>
+                    <th:block th:each="section : ${sections}">
+                        <li class="nav-item" th:classappend="${pathIds.contains(section.id)} ? active">
+                            <a th:text="${section.aspects.contentData.data.title}" th:href="${curl.create(section.id)}" class="nav-link" href="#">Section link</a>
+                        </li>
+                    </th:block>
                 </ul>
             </div>
         </div>
