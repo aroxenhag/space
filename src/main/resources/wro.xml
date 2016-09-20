@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <groups xmlns="http://www.isdc.ro/wro">
-    <group name="main">
+    <group name="main-css">
         <css>/static/css/main.less</css>
+    </group>
+    <group name="main-js">
+        <js>/static/js/jquery.min.js</js>
+        <js>/static/js/tether.min.js</js>
+        <js>/static/js/bootstrap.min.js</js>
     </group>
 </groups>
