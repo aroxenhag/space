@@ -14,7 +14,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SpringBootApplication
 @EnableCaching
@@ -28,6 +31,8 @@ public class DispatcherApplication {
     }
 
     public static String AUTH_TOKEN;
+
+    private final static Logger LOG = Logger.getLogger(DispatcherApplication.class.getName());
 
     public static void main(String[] args) {
         SpringApplication.run(DispatcherApplication.class, args);
@@ -51,13 +56,14 @@ public class DispatcherApplication {
 
             Map<String, String> map = new Gson().fromJson(responseString, Map.class);
             String token = map.get("token");
-
-            System.out.println("Aquired content api authentication token: " + token);
-
+            String userId = map.get("userId");
+            Date expireTime = new Date(Long.parseLong(map.get("expireTime")));
             DispatcherApplication.AUTH_TOKEN = token;
 
+            LOG.warning("Logged in to content api as: " + userId + ". Token will expire at " + expireTime);
+
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.log(Level.SEVERE, "Error aquiring authentication token. No content will be available.", e);
         }
     }
 }
