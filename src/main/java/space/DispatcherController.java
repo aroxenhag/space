@@ -219,7 +219,7 @@ public class DispatcherController {
 
     class DateUtil {
         public String time(Long time) {
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm");
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mma");
             return sdf.format(new Date(time));
         }
 
