@@ -14,7 +14,7 @@
     var updateAds = function() {
       $(".ad-placeholder").each(function() {
         var ad = $(this);
-        ad.find("div").text(ad.width() + " x " + ad.outerHeight());
+        ad.find(".dimensions").text(ad.width() + "x" + ad.outerHeight());
       });
     };
     $(window).on("resize", updateAds);

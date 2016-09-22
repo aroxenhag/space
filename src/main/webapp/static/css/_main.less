@@ -124,13 +124,13 @@ h1, h2, h3, h4, h5, h6 {
   display: block;
   top: -4px;
   position: relative;
-  margin-left: 50px;
+  margin-left: 44px;
 }
 
 .top-articles li time {
   color: rgba(0, 0, 0, 0.4);
   font-size: 12px;
-  margin-left: 50px;
+  margin-left: 40px;
   position: relative;
   top: -4px;
 }
@@ -168,7 +168,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .article .lead .section-title {
   display: inline-block;
-  border-left: 6px solid #0288D1;
+  border-left: 6px solid lighten(@primaryColor, 20%);
   padding-left: 4px;
   margin-right: 4px;
   font-size: 14px;
@@ -187,7 +187,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 12px;
   text-transform: uppercase;
   display: inline-block;
-  background-color: #0288D1;
+  background-color: lighten(@primaryColor, 10%);
   margin: 0 12px 6px 0;
 }
 
@@ -199,7 +199,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .article .tags li a:hover {
   color: #fff;
-  background-color: lighten(#0288D1, 10%);
+  background-color: lighten(@primaryColor, 20%);
 }
 
 .article .byline {
@@ -224,8 +224,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .article .body a {
-  border-bottom: 3px solid #B3E5FC;
-  box-shadow: inset 0 -4px 0 #B3E5FC;
+  border-bottom: 3px solid lighten(@primaryColor, 30%);
+  box-shadow: inset 0 -4px 0 lighten(@primaryColor, 30%);
   color: inherit;
 }
 
@@ -235,11 +235,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .ad-placeholder {
-  background-color: #B3E5FC;
-  color: rgba(255, 255, 255, .8);
+  background-color: #FAFAFA;
+  color: #959494;
+  border: 1px solid #959494;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+}
+
+.ad-placeholder .dimensions {
+  font-weight: bold;
 }
 
 .main-col .ad-placeholder {
@@ -269,9 +274,8 @@ img {
 
 .teaser time {
   color: rgba(0, 0, 0, 0.4);
-  margin-right: 2px;
   text-transform: uppercase;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .teaser .lead {
@@ -290,13 +294,13 @@ img {
 }
 
 .meta-entity {
-  font-size: 26px;
-  padding-left: 14px;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px 0;
   text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.4);
-  border-left: 6px solid #0288D1;
-  padding-bottom: 2px;
-  border-bottom: 1px solid @dividerColor;
+  background-color: lighten(@primaryColor, 10%);
+  color: #fff;
   margin-bottom: 20px;
 }
 

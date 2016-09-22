@@ -40,7 +40,7 @@
             </ul>
             <div class="body" th:unless="${utils.isEmpty(article, 'aspects.contentData.data.body')}" th:utext="${article.aspects.contentData.data.body}">Article body...</div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 right-col">
             <div th:replace="_ad">AD...</div>
             <div th:replace="_article-list :: .article-list">Article top list...</div>
         </div>
