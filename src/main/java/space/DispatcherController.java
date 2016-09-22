@@ -50,7 +50,7 @@ public class DispatcherController {
         return dispatch(request, model, Arrays.asList("friendly/" + site), articles);
     }
 
-    @RequestMapping(value = "{path:(?!css|wro4j|static|error).*$}/**")
+    @RequestMapping(value = "{path:(?!webjars|wro4j|static|error).*$}/**")
     public String dispatch(HttpServletRequest request, Map<String, Object> model) {
 
         // Get content path
