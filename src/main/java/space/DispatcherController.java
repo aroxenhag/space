@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,23 +36,23 @@ public class DispatcherController {
     private String imageServiceBaseUrl;
 
     @RequestMapping(value = "/{site}/about/{tag}")
-    public String about(@PathVariable("site") String site, @PathVariable("tag") String tag, HttpServletRequest request, Map<String, Object> model) {
+    public String about(@PathVariable("site") String site, @PathVariable("tag") String tag, HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
         Map<String, Object> result = contentApi.search("tag_ss:" + tag);
         List<Map<String, Object>> articles = getArticlesForResult(result);
         model.put("metaEntity", tag);
-        return dispatch(request, model, Arrays.asList("friendly/" + site), articles);
+        return dispatch(response, model, Arrays.asList("friendly/" + site), articles);
     }
 
     @RequestMapping(value = "/{site}/by/{author}")
-    public String by(@PathVariable("site") String site, @PathVariable("author") String author, HttpServletRequest request, Map<String, Object> model) {
+    public String by(@PathVariable("site") String site, @PathVariable("author") String author, HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
         Map<String, Object> result = contentApi.search("byline_s:" + author);
         List<Map<String, Object>> articles = getArticlesForResult(result);
         model.put("metaEntity", author);
-        return dispatch(request, model, Arrays.asList("friendly/" + site), articles);
+        return dispatch(response, model, Arrays.asList("friendly/" + site), articles);
     }
 
     @RequestMapping(value = "{path:(?!webjars|wro4j|static|error).*$}/**")
-    public String dispatch(HttpServletRequest request, Map<String, Object> model) {
+    public String dispatch(HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
 
         // Get content path
         List<String> friendlyAliasPath = getFriendlyAliasPath(request);
@@ -60,10 +61,12 @@ public class DispatcherController {
             contentPath.add("friendly/" + s);
         });
 
-        return dispatch(request, model, contentPath, null);
+        return dispatch(response, model, contentPath, null);
     }
 
-    private String dispatch(HttpServletRequest request, Map<String, Object> model, List<String> contentPath, List<Map<String, Object>> articles) {
+    private String dispatch(HttpServletResponse response, Map<String, Object> model, List<String> contentPath, List<Map<String, Object>> articles) {
+        response.addHeader("Cache-Control", "max-age=5");
+
         // Get contents for content path
         List<Map<String, Object>> contents = contentApi.batch(contentPath);
         model.put("pathContents", contents);
