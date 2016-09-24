@@ -29,6 +29,10 @@ public class ContentMapUtil {
         return getString(map, "aspects.contentData.data._type");
     }
 
+    public static String getTitle(Map<String, Object> map) {
+        return getString(map, "aspects.contentData.data.title");
+    }
+
     public static String getParentId(Map<String, Object> map) {
         return getString(map, "aspects.contentData.data.parentId");
     }
