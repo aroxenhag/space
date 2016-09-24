@@ -51,7 +51,7 @@ public class DispatcherController {
         return dispatch(response, model, Arrays.asList("friendly/" + site), articles);
     }
 
-    @RequestMapping(value = "{path:(?!webjars|wro4j|static|error).*$}/**")
+    @RequestMapping(value = "{path:(?!websocket|webjars|wro4j|static|error).*$}/**")
     public String dispatch(HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
 
         // Get content path
@@ -243,7 +243,7 @@ public class DispatcherController {
         }
     }
 
-    class Utils {
+    static class Utils {
         public boolean isEmpty(Object o, String key) {
             return isEmpty(ContentMapUtil.getObject((Map<String, Object>) o, key));
         }
@@ -253,7 +253,7 @@ public class DispatcherController {
         }
     }
 
-    class ContentUrlCreator {
+    static class ContentUrlCreator {
         private ContentApi contentApi;
 
         public ContentUrlCreator(ContentApi contentApi) {

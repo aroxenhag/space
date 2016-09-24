@@ -6,6 +6,17 @@
 <body>
 
 <footer class="footer">
+
+    <div class="breaking-news-alert alert fade in" role="alert">
+        <button type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <a class="breaking-news-alert-text" href="#">
+            <h2></h2>
+            <p class="lead"></p>
+        </a>
+    </div>
+
     <div class="container">
         <span class="copyright" th:text="'&copy; ' + ${site.aspects.contentData.data.title}">Copyright notice</span>
     </div>
@@ -22,6 +33,27 @@
     $(document).ready(updateAds);
 
     $('.carousel').carousel();
+
+    function connect() {
+        var socket = new SockJS('/websocket');
+        var stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            stompClient.subscribe('/topic/breaking', function (article) {
+                showAlert(JSON.parse(article.body));
+            });
+        });
+    }
+    function showAlert(article) {
+        var alertElem = $(".breaking-news-alert");
+        alertElem.find("h2").text(article.title);
+        alertElem.find(".lead").text(article.lead);
+        alertElem.find(".breaking-news-alert-text").attr("href", article.url);
+        alertElem.show();
+    }
+    $(".breaking-news-alert .close").click(function() {
+      $(this).closest(".alert").hide();
+    });
+    connect();
     </script>
 </footer>
 

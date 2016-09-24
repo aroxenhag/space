@@ -14,6 +14,7 @@ import kafka.javaapi.consumer.SimpleConsumer;
 import kafka.message.MessageAndOffset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -41,6 +42,9 @@ public class ContentEventListener {
 
     @Autowired
     private ContentApi contentApi;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 
     private String leadBroker;
     private SimpleConsumer consumer;
@@ -111,14 +115,20 @@ public class ContentEventListener {
 
                     String message = new String(bytes, "UTF-8");
 
-                    String contentId = "contentid/" + message.substring(message.indexOf(":") + 1, message.lastIndexOf(":"));
+                    String contentId = "contentid/" + message.substring(message.indexOf(":") + 1);
                     Map<String, Object> content = contentApi.content(contentId);
                     String type = ContentMapUtil.getType(content);
                     if ("article".equals(type)) {
                         String title = ContentMapUtil.getTitle(content);
-                        System.out.println(contentId + ": " + title);
+                        String lead = ContentMapUtil.getString(content, "aspects.contentData.data.lead");
+                        if (title.toUpperCase().startsWith("EXTRA:")) {
+                            DispatcherController.ContentUrlCreator urlCreator = new DispatcherController.ContentUrlCreator(contentApi);
+                            String unversionedContentId = contentId.substring(0, contentId.lastIndexOf(":"));
+                            String url = urlCreator.create(unversionedContentId.substring("contentid/".length()));
+                            BreakingNewsController.BreakingArticle breakingArticle = new BreakingNewsController.BreakingArticle(title, lead, url);
+                            template.convertAndSend("/topic/breaking", breakingArticle);
+                        }
                     }
-
                     numRead++;
                 }
 
