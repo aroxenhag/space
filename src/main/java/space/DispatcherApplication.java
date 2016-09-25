@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.IOException;
 import java.util.Date;
@@ -36,7 +35,7 @@ public class DispatcherApplication {
     private final static Logger LOG = Logger.getLogger(DispatcherApplication.class.getName());
 
     public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(DispatcherApplication.class, args);
+        SpringApplication.run(DispatcherApplication.class, args);
         aquireAndSetToken();
     }
 
