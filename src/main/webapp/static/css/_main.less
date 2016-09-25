@@ -52,28 +52,49 @@
   line-height: 2.0rem;
 }
 
+.space .navbar-brand {
+  color: @primaryColor;
+}
+
+.space .navbar-brand:hover {
+  color: @primaryColor;
+}
 
 /* Breakpoints */
 @media (min-width:544px) {
   .navbar-right {
     float: right;
     position: relative;
-    top: 4px;
+    top: 5px;
   }
 
   .navbar-brand {
     float: left;
-    font-size: 2.4rem;
+    font-size: 1.7rem;
+  }
+
+  .nav .nav-item {
+    font-size: 14px;
   }
 }
 
 @media (min-width:768px) {
+  .navbar-right {
+    top: 4px;
+  }
+
   .navbar-brand {
-    font-size: 2.4rem;
+    font-size: 1.7rem;
   }
 }
 
 @media (min-width:992px) {
+  .navbar-brand {
+    font-size: 2.4rem;
+  }
+  .nav .nav-item {
+    font-size: 16px;
+  }
 }
 
 @media (min-width:1200px) {
