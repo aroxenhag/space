@@ -319,6 +319,12 @@ h1, h2, h3, h4, h5, h6 {
   text-align: center;
 }
 
+@media (max-width:544px) {
+  .ad-placeholder {
+    margin: 0 16px;
+  }
+}
+
 .right-col > * {
   margin-bottom: 20px;
 }
@@ -326,6 +332,10 @@ h1, h2, h3, h4, h5, h6 {
 img {
   display: block;
   width: 100%;
+}
+
+.teaser {
+  display: block;
 }
 
 .teaser .image-container {
@@ -383,6 +393,28 @@ img {
 
 .col-md-12 h2 {
   font-size: 44px;
+}
+
+@media (max-width:544px) {
+  .space .teaser {
+    margin: 0 0 24px;
+  }
+
+  .col-md-12 h2 {
+    font-size: 24px;
+  }
+
+  .carousel .teaser .teaser-text {
+    right: 20px !important;
+  }
+
+  .carousel .teaser .teaser-text h2 {
+    font-size: 16px !important;
+  }
+
+  .carousel .teaser .teaser-text .lead {
+    font-size: 14px;
+  }
 }
 
 .col-md-6 h2 {
