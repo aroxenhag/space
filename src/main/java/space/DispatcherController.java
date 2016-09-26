@@ -67,6 +67,7 @@ public class DispatcherController {
     private String dispatch(HttpServletResponse response, Map<String, Object> model, List<String> contentPath, List<Map<String, Object>> articles) {
         response.addHeader("Cache-Control", "max-age=5");
 
+
         // Get contents for content path
         List<Map<String, Object>> contents = contentApi.batch(contentPath);
         model.put("pathContents", contents);
@@ -76,9 +77,9 @@ public class DispatcherController {
         }
         model.put("pathIds", pathIds);
 
+
         // Get site and section from contents in content path
         Map<String, Object> site = contents.get(0);
-        model.put("site", site);
         Map<String, Object> section = site;
         Map<String, Object> article = null;
         for (Map content : contents) {
@@ -89,8 +90,10 @@ public class DispatcherController {
                 article = content;
             }
         }
+        model.put("site", site);
         model.put("section", section);
         model.put("article", article);
+
 
         // Get all top level sections for navigation
         List sectionIds = (List) ContentMapUtil.getObject(site, "aspects.contentData.data.sections");
@@ -102,6 +105,7 @@ public class DispatcherController {
         }
         model.put("sections", sections);
 
+
         // Get top articles for site for top list
         List<String> siteSubSectionIds = new ArrayList<>();
         addAllSubSectionIds(contentApi, site, siteSubSectionIds);
@@ -109,9 +113,9 @@ public class DispatcherController {
         List<Map<String, Object>> siteTopArticles = getArticlesForResult(siteArticlesResult);
         model.put("topArticles", siteTopArticles);
 
+
         // Get most recent articles for current section (and its subsections)
-        // NOTE: Since it's har to index the parent chain, we expand the query instead
-        // NOTE: Since the parent ids are the uuids that are never resoved to real ids,
+        // NOTE: Since the parent ids are the uuids that are never resolved to real ids,
         // we have to use the uuids here.
         List<Map<String, Object>> pageArticles = articles; // Get from param. If null, use most recent articles from section
         if (pageArticles == null) {
@@ -120,6 +124,7 @@ public class DispatcherController {
             Map currentSectionArticlesResult = contentApi.search("type:article AND parentId_s:(" + String.join(" ", currentSectionSubSectionIds) + ")");
             pageArticles = getArticlesForResult(currentSectionArticlesResult);
         }
+
 
         // Build layout
         String layoutConfigStr = ContentMapUtil.getString(section, "aspects.contentData.data.layoutConfig");
@@ -135,7 +140,6 @@ public class DispatcherController {
         for (String adPosition : adsConfigStr.split(",")) {
             adsConfig.add(Integer.parseInt(adPosition.trim()));
         }
-
         int articleIndex = 0;
         int rowIndex = 1;
         List<Map<String, Object>> rows = new ArrayList<>();
@@ -170,13 +174,15 @@ public class DispatcherController {
         }
         model.put("rows", rows);
 
+
         // Add generic utilities
         model.put("curl", new ContentUrlCreator(contentApi));
-        model.put("lpage", new LandingPageUrlCreator(contentApi));
+        model.put("lpage", new LandingPageUrlCreator());
         model.put("iurl", new ImageUrlCreator(contentApi));
         model.put("contentApi", contentApi);
         model.put("utils", new Utils());
         model.put("date", new DateUtil());
+
 
         // Dispatch to correct template based on type
         if (article != null) {
@@ -276,12 +282,6 @@ public class DispatcherController {
     }
 
     class LandingPageUrlCreator {
-        private ContentApi contentApi;
-
-        public LandingPageUrlCreator(ContentApi contentApi) {
-            this.contentApi = contentApi;
-        }
-
         public String create(Map<String, Object> site, String dimension, String entity) {
             String friendlyAlias = ContentMapUtil.getFriendlyAlias(site);
             return "/" + friendlyAlias + "/" + dimension + "/" + toFriendlyFormat(entity);
