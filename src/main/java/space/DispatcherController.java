@@ -84,7 +84,7 @@ public class DispatcherController {
         Map<String, Object> article = null;
         for (Map content : contents) {
             String type = ContentMapUtil.getType(content);
-            if ("section".equals(type)) {
+            if ("web-section".equals(type)) {
                 section = content;
             } else if ("web-article".equals(type)) {
                 article = content;
