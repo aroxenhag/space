@@ -14,7 +14,7 @@ import java.util.Map;
 @FeignClient(name = "content-api", url = "${content-api-base-url}")
 interface ContentApi {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/content/{aliasandid}")
+    @RequestMapping(method = RequestMethod.GET, value = "/content/{aliasandid}?variant=web")
     Map<String, Object> content(@RequestParam("aliasandid") String id, @RequestHeader("X-Auth-Token") String token);
 
     @Cacheable("content")

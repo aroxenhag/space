@@ -37,7 +37,7 @@ public class DispatcherController {
 
     @RequestMapping(value = "/{site}/about/{tag}")
     public String about(@PathVariable("site") String site, @PathVariable("tag") String tag, HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
-        Map<String, Object> result = contentApi.search("tag_ss:" + tag);
+        Map<String, Object> result = contentApi.search("tags_ss:" + tag);
         List<Map<String, Object>> articles = getArticlesForResult(result);
         model.put("metaEntity", tag);
         return dispatch(response, model, Arrays.asList("friendly/" + site), articles);
@@ -86,7 +86,7 @@ public class DispatcherController {
             String type = ContentMapUtil.getType(content);
             if ("section".equals(type)) {
                 section = content;
-            } else if ("article".equals(type)) {
+            } else if ("web-article".equals(type)) {
                 article = content;
             }
         }
