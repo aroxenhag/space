@@ -1,5 +1,6 @@
 package space;
 
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,7 +94,7 @@ public class DispatcherController {
         model.put("site", site);
         model.put("section", section);
         model.put("article", article);
-
+        model.put("ga_tracker", createTracker(site, section, article));
 
         // Get all top level sections for navigation
         List sectionIds = (List) ContentMapUtil.getObject(site, "aspects.contentData.data.sections");
@@ -190,6 +191,20 @@ public class DispatcherController {
         } else {
             return "section";
         }
+    }
+
+    private Map<String, String> createTracker(Map<String, Object> site, Map<String, Object> section, Map<String, Object> article) {
+        Map<String, String> tracker = new HashMap<>();
+        if (site != null) {
+            tracker.put("dimension1", ContentMapUtil.getFriendlyAlias(site));
+        }
+        if (section != null) {
+            tracker.put("dimension2", ContentMapUtil.getFriendlyAlias(section));
+        }
+        if (article != null) {
+            tracker.put("dimension3", ContentMapUtil.getFriendlyAlias(article));
+        }
+        return tracker;
     }
 
     private List<Map<String, Object>> getArticlesForResult(Map currentSectionArticlesResult) {
