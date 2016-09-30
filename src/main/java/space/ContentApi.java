@@ -22,7 +22,7 @@ interface ContentApi {
         return content(id, DispatcherApplication.AUTH_TOKEN);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/search/onecms/select?q={q}&wt=json&rows=20&sort=publishDate_dt+desc")
+    @RequestMapping(method = RequestMethod.GET, value = "/search/onecms/select?q={q}&wt=json&rows=50&sort=publishDate_dt+desc")
     Map<String, Object> search(@RequestParam("q") String q, @RequestHeader("X-Auth-Token") String token);
 
     @Cacheable("search")
