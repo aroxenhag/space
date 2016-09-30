@@ -212,13 +212,14 @@ public class DispatcherController {
         List<Map<String, Object>> articles = new ArrayList<>();
         docs.forEach(doc -> {
             String articleId = ContentMapUtil.getString((Map<String, Object>) doc, "id");
-            articles.add(contentApi.content("contentid" + "/" + articleId));
+            articles.add(contentApi.content("contentid/" + articleId));
         });
         return articles;
     }
 
     private void addAllSubSectionIds(ContentApi contentApi, Map<String, Object> section, List<String> allSectionIds) {
         allSectionIds.add(ContentMapUtil.getUUID(section));
+        allSectionIds.add("contentid/" + ContentMapUtil.getId(section).replaceAll(":", "\\\\:"));
         List<String> subSectionIds = (List) ContentMapUtil.getObject(section, "aspects.contentData.data.sections");
         if (subSectionIds != null) {
             for (String subSectionId : subSectionIds) {
@@ -314,6 +315,8 @@ public class DispatcherController {
         public String create(String id) {
             if (contentApi.isSymbolicId(id)) {
                 id = contentApi.translateSymbolicId(id);
+            } else if (id.startsWith("contentid/")) {
+                id = id.substring("contentid/".length());
             }
             return imageServiceBaseUrl + "/" + id + "/image.jpg?a=2:1";
         }
