@@ -195,15 +195,9 @@ public class DispatcherController {
 
     private Map<String, String> createTracker(Map<String, Object> site, Map<String, Object> section, Map<String, Object> article) {
         Map<String, String> tracker = new HashMap<>();
-        if (site != null) {
-            tracker.put("dimension1", ContentMapUtil.getFriendlyAlias(site));
-        }
-        if (section != null) {
-            tracker.put("dimension2", ContentMapUtil.getFriendlyAlias(section));
-        }
-        if (article != null) {
-            tracker.put("dimension3", ContentMapUtil.getFriendlyAlias(article));
-        }
+        tracker.put("dimension1", (site != null) ? ContentMapUtil.getFriendlyAlias(site) : "");
+        tracker.put("dimension2", (section != null) ? ContentMapUtil.getFriendlyAlias(section) : "");
+        tracker.put("dimension3", (article != null) ? ContentMapUtil.getFriendlyAlias(article) : "");
         return tracker;
     }
 
