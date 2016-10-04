@@ -319,7 +319,7 @@ public class DispatcherController {
             } else if (id.startsWith("contentid/")) {
                 id = id.substring("contentid/".length());
             }
-            return imageServiceBaseUrl + "/" + id + "/image.jpg?a=3:2";
+            return imageServiceBaseUrl + "/" + id + "/image.jpg?a=2:1";
         }
     }
 }
