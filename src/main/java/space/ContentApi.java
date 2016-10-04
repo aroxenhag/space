@@ -24,6 +24,13 @@ interface ContentApi {
         return content(unversioned(id), DispatcherApplication.AUTH_TOKEN);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/content/{aliasandid}?variant=web")
+    Map<String, Object> versionedContent(@RequestParam("aliasandid") String id, @RequestHeader("X-Auth-Token") String token);
+
+    default Map<String, Object> versionedContent(@RequestParam("aliasandid") String id) {
+        return versionedContent(id, DispatcherApplication.AUTH_TOKEN);
+    }
+
     @RequestMapping(method = RequestMethod.GET, value = "/search/onecms/select?q={q}&view=the-localhost&wt=json&rows=50&sort=publishDate_dt+desc")
     Map<String, Object> search(@RequestParam("q") String q, @RequestHeader("X-Auth-Token") String token);
 

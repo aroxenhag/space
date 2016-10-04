@@ -116,7 +116,7 @@ public class ContentEventListener {
                     String message = new String(bytes, "UTF-8");
 
                     String contentId = "contentid/" + message.substring(message.indexOf(":") + 1);
-                    Map<String, Object> content = contentApi.content(contentId);
+                    Map<String, Object> content = contentApi.versionedContent(contentId);
                     String type = ContentMapUtil.getType(content);
                     if ("web-article".equals(type)) {
                         String title = ContentMapUtil.getTitle(content);
