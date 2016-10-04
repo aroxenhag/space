@@ -118,10 +118,10 @@ public class ContentEventListener {
                     String contentId = "contentid/" + message.substring(message.indexOf(":") + 1);
                     Map<String, Object> content = contentApi.content(contentId);
                     String type = ContentMapUtil.getType(content);
-                    if ("article".equals(type)) {
+                    if ("web-article".equals(type)) {
                         String title = ContentMapUtil.getTitle(content);
                         String lead = ContentMapUtil.getString(content, "aspects.contentData.data.lead");
-                        if (title.toUpperCase().startsWith("EXTRA:")) {
+                        if (title != null && title.toUpperCase().startsWith("EXTRA:")) {
                             DispatcherController.ContentUrlCreator urlCreator = new DispatcherController.ContentUrlCreator(contentApi);
                             String unversionedContentId = contentId.substring(0, contentId.lastIndexOf(":"));
                             String url = urlCreator.create(unversionedContentId.substring("contentid/".length()));
