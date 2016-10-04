@@ -10,19 +10,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @FeignClient(name = "content-api", url = "${content-api-base-url}")
 interface ContentApi {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/content/{aliasandid}?variant=web")
+    @RequestMapping(method = RequestMethod.GET, value = "/content/view/the-localhost/{aliasandid}?variant=web")
     Map<String, Object> content(@RequestParam("aliasandid") String id, @RequestHeader("X-Auth-Token") String token);
 
     @Cacheable("content")
     default Map<String, Object> content(@RequestParam("aliasandid") String id) {
-        return content(id, DispatcherApplication.AUTH_TOKEN);
+        return content(unversioned(id), DispatcherApplication.AUTH_TOKEN);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/search/onecms/select?q={q}&wt=json&rows=50&sort=publishDate_dt+desc")
+    @RequestMapping(method = RequestMethod.GET, value = "/search/onecms/select?q={q}&view=the-localhost&wt=json&rows=50&sort=publishDate_dt+desc")
     Map<String, Object> search(@RequestParam("q") String q, @RequestHeader("X-Auth-Token") String token);
 
     @Cacheable("search")
@@ -44,5 +46,15 @@ interface ContentApi {
 
     default boolean isSymbolicId(String id) {
         return id.startsWith("uuid");
+    }
+
+    default String unversioned(String id) {
+        // strip off version - temporary workaround
+        Pattern pattern = Pattern.compile("(.*:.*):.*");
+        Matcher matcher = pattern.matcher(id);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        }
+        return id;
     }
 }
