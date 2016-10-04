@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
 import java.util.Date;
@@ -36,10 +37,10 @@ public class DispatcherApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DispatcherApplication.class, args);
-        aquireAndSetToken();
     }
 
-    private static void aquireAndSetToken() {
+    @Scheduled(fixedDelay = 1000 * 60 * 5)
+    void aquireAndSetToken() {
         try {
             String url = contentApiBaseUrl + "/security/token";
             String json = "{\"username\": \"root\",\"password\": \"god\"}";
