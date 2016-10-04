@@ -1,6 +1,5 @@
 package space;
 
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +34,14 @@ public class DispatcherController {
 
     @Value("${image-service-base-url}")
     private String imageServiceBaseUrl;
+
+    @Value("${default-site}")
+    private String defaultSite;
+
+    @RequestMapping(value = "/")
+    public String root() {
+        return "redirect:/" + defaultSite;
+    }
 
     @RequestMapping(value = "/{site}/about/{tag}")
     public String about(@PathVariable("site") String site, @PathVariable("tag") String tag, HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
