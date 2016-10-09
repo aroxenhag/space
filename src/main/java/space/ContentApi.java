@@ -34,7 +34,7 @@ interface ContentApi {
     @RequestMapping(method = RequestMethod.GET, value = "/search/onecms/select?q={q}&view=the-localhost&wt=json&rows=50&sort=publishDate_dt+desc")
     Map<String, Object> search(@RequestParam("q") String q, @RequestHeader("X-Auth-Token") String token);
 
-    @Cacheable("search")
+    //@Cacheable("search")
     default Map<String, Object> search(@RequestParam("q") String q) {
         return search(q, DispatcherApplication.AUTH_TOKEN);
     }
