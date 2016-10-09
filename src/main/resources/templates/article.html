@@ -19,8 +19,8 @@
                     <img th:src="${iurl.create(image.id)}"/>
                 </div>
                 <div class="image-meta">
-                    <span class="image-caption" th:text="*{image.aspects.contentData.data.description}?: 'no caption'"></span>
-                    <span class="image-byline" th:text="*{image.aspects.contentData.data.byline}?: 'no byline'"></span>
+                    <span class="image-caption" th:unless="${utils.isEmpty(image, 'aspects.contentData.data.description')}" th:text="${image.aspects.contentData.data.description}"></span>
+                    <span class="image-byline" th:unless="${utils.isEmpty(image, 'aspects.contentData.data.byline')}" th:text="${image.aspects.contentData.data.byline}"></span>
                 </div>
             </div>
 
