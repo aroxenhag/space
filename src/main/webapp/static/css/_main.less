@@ -299,11 +299,12 @@ h1, h2, h3, h4, h5, h6 {
   color: inherit;
 }
 
+@adColor: #e2edff;
 .ad-placeholder {
-  background-color: #FAFAFA;
-  color: #959494;
-  border: 1px solid #959494;
+  background-color: @adColor;
+  color: darken(@adColor, 10%);
   display: flex;
+  font-weight: 300;
   flex-direction: column;
   justify-content: space-around;
   font-family: 'Roboto Condensed', sans-serif;
