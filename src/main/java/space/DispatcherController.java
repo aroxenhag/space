@@ -316,8 +316,6 @@ public class DispatcherController {
         public String create(String id) {
             if (contentApi.isSymbolicId(id)) {
                 id = contentApi.translateSymbolicId(id);
-            } else if (id.startsWith("contentid/")) {
-                id = id.substring("contentid/".length());
             }
             return imageServiceBaseUrl + "/" + id + "/image.jpg?f=2x1";
         }

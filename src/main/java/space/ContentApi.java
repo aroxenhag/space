@@ -48,7 +48,7 @@ interface ContentApi {
     }
 
     default String translateSymbolicId(String symbolicId) {
-        return ContentMapUtil.getString(content(symbolicId), "id");
+        return "contentid/" + ContentMapUtil.getString(content(symbolicId), "id");
     }
 
     default boolean isSymbolicId(String id) {
