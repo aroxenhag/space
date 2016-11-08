@@ -119,7 +119,7 @@ public class ContentEventListener {
 
                         String contentId = "contentid/" + message.substring(message.indexOf(":") + 1);
                         String unversionedContentId = contentApi.unversioned(contentId);
-                        System.out.println("evicting from cache: " + contentId);
+                        System.out.println("evicting from unversioned id cache: " + unversionedContentId + " (full id: " + contentId + ")");
                         contentApi.evict(unversionedContentId);
 
                         boolean liveUpdatesEnabled = false;
