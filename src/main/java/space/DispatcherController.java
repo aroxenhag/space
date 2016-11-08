@@ -1,9 +1,8 @@
 package space;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 @Controller
-@EnableFeignClients
 public class DispatcherController {
 
     @Autowired
@@ -37,6 +36,8 @@ public class DispatcherController {
 
     @Value("${default-site}")
     private String defaultSite;
+
+    private final static Logger LOG = Logger.getLogger(DispatcherController.class.getName());
 
     @RequestMapping(value = "/")
     public String root() {
@@ -75,6 +76,9 @@ public class DispatcherController {
     private String dispatch(HttpServletResponse response, Map<String, Object> model, List<String> contentPath, List<Map<String, Object>> articles) {
         response.addHeader("Cache-Control", "max-age=5");
 
+        ContentApi.totalContentGets = 0;
+        ContentApi.uncachedContentGets = 0;
+        ContentApi.ids.clear();
 
         // Get contents for content path
         List<Map<String, Object>> contents = contentApi.batch(contentPath);
@@ -108,7 +112,7 @@ public class DispatcherController {
         List<Map<String, Object>> sections = new ArrayList<>();
         if (sectionIds != null) {
             sectionIds.forEach(sectionId -> {
-                sections.add(contentApi.content((String) sectionId));
+                sections.add(contentApi.getContent((String) sectionId));
             });
         }
         model.put("sections", sections);
@@ -191,6 +195,7 @@ public class DispatcherController {
         model.put("utils", new Utils());
         model.put("date", new DateUtil());
 
+        System.out.println("total gets: " + ContentApi.totalContentGets + ", uncached gets: " + ContentApi.uncachedContentGets + ", unique contents: " + ContentApi.ids.size());
 
         // Dispatch to correct template based on type
         if (article != null) {
@@ -198,6 +203,7 @@ public class DispatcherController {
         } else {
             return "section";
         }
+
     }
 
     private Map<String, String> createTracker(Map<String, Object> site, Map<String, Object> section, Map<String, Object> article) {
@@ -213,7 +219,7 @@ public class DispatcherController {
         List<Map<String, Object>> articles = new ArrayList<>();
         docs.forEach(doc -> {
             String articleId = ContentMapUtil.getString((Map<String, Object>) doc, "id");
-            articles.add(contentApi.content("contentid/" + articleId));
+            articles.add(contentApi.getContent("contentid/" + contentApi.unversioned(articleId)));
         });
         return articles;
     }
@@ -224,7 +230,7 @@ public class DispatcherController {
         List<String> subSectionIds = (List) ContentMapUtil.getObject(section, "aspects.contentData.data.sections");
         if (subSectionIds != null) {
             for (String subSectionId : subSectionIds) {
-                Map<String, Object> content = contentApi.content(subSectionId);
+                Map<String, Object> content = contentApi.getContent(subSectionId);
                 addAllSubSectionIds(contentApi, content, allSectionIds);
             }
         }
@@ -287,7 +293,7 @@ public class DispatcherController {
             List<String> friendlyAliases = new ArrayList<>();
             id = "contentid/" + id;
             while (true) {
-                Map<String, Object> content = contentApi.content(id);
+                Map<String, Object> content = contentApi.getContent(id);
                 friendlyAliases.add(0, ContentMapUtil.getFriendlyAlias(content));
                 String parentId = ContentMapUtil.getParentId(content);
                 if (parentId.contains("all-sites")) {
@@ -315,7 +321,7 @@ public class DispatcherController {
         // Supports jpg in 2:1 format
         public String create(String id) {
             if (contentApi.isSymbolicId(id)) {
-                id = contentApi.translateSymbolicId(id);
+                id = contentApi.resolveSymbolicId(id);
             } else if (!id.startsWith("contentid/")) {
                 id = "contentid/" + id;
             }

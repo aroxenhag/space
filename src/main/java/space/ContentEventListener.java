@@ -115,20 +115,31 @@ public class ContentEventListener {
 
                     String message = new String(bytes, "UTF-8");
 
-                    String contentId = "contentid/" + message.substring(message.indexOf(":") + 1);
-                    Map<String, Object> content = contentApi.versionedContent(contentId);
-                    String type = ContentMapUtil.getType(content);
-                    if ("web-article".equals(type)) {
-                        String title = ContentMapUtil.getTitle(content);
-                        String lead = ContentMapUtil.getString(content, "aspects.contentData.data.lead");
-                        if (title != null && title.toUpperCase().startsWith("EXTRA:")) {
-                            DispatcherController.ContentUrlCreator urlCreator = new DispatcherController.ContentUrlCreator(contentApi);
-                            String unversionedContentId = contentId.substring(0, contentId.lastIndexOf(":"));
-                            String url = urlCreator.create(unversionedContentId.substring("contentid/".length()));
-                            BreakingNewsController.BreakingArticle breakingArticle = new BreakingNewsController.BreakingArticle(title, lead, url);
-                            template.convertAndSend("/topic/breaking", breakingArticle);
+                    if (message.startsWith("mutation:") && !message.contains("draft")) {
+
+                        String contentId = "contentid/" + message.substring(message.indexOf(":") + 1);
+                        String unversionedContentId = contentApi.unversioned(contentId);
+                        System.out.println("evicting from cache: " + contentId);
+                        contentApi.evict(unversionedContentId);
+
+                        boolean liveUpdatesEnabled = false;
+                        if (liveUpdatesEnabled) {
+                            Map<String, Object> content = contentApi.getContent(contentId);
+                            String type = ContentMapUtil.getType(content);
+                            if ("web-article".equals(type)) {
+                                String title = ContentMapUtil.getTitle(content);
+                                String lead = ContentMapUtil.getString(content, "aspects.contentData.data.lead");
+                                if (title != null && title.toUpperCase().startsWith("EXTRA:")) {
+                                    DispatcherController.ContentUrlCreator urlCreator = new DispatcherController.ContentUrlCreator(contentApi);
+                                    String url = urlCreator.create(unversionedContentId.substring("contentid/".length()));
+                                    BreakingNewsController.BreakingArticle breakingArticle = new BreakingNewsController.BreakingArticle(title, lead, url);
+                                    template.convertAndSend("/topic/breaking", breakingArticle);
+                                }
+                            }
                         }
+
                     }
+
                     numRead++;
                 }
 
