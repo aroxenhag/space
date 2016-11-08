@@ -43,7 +43,7 @@ public class DispatcherApplication {
     void aquireAndSetToken() {
         try {
             String url = contentApiBaseUrl + "/security/token";
-            String json = "{\"username\": \"root\",\"password\": \"god\"}";
+            String json = "{\"username\": \"admin\",\"password\": \"123456\"}";
 
             HttpClient httpClient = HttpClientBuilder.create().build();
 
