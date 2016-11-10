@@ -31,6 +31,9 @@ public class DispatcherController {
     @Autowired
     private ContentApi contentApi;
 
+    @Autowired
+    Stats stats;
+
     @Value("${image-service-base-url}")
     private String imageServiceBaseUrl;
 
@@ -49,7 +52,7 @@ public class DispatcherController {
         Map<String, Object> result = contentApi.search("tags_ss:" + tag);
         List<Map<String, Object>> articles = getArticlesForResult(result);
         model.put("metaEntity", tag);
-        return dispatch(response, model, Arrays.asList("friendly/" + site), articles);
+        return dispatch(request, response, model, Arrays.asList("friendly/" + site), articles);
     }
 
     @RequestMapping(value = "/{site}/by/{author}")
@@ -57,7 +60,7 @@ public class DispatcherController {
         Map<String, Object> result = contentApi.search("byline_s:" + author);
         List<Map<String, Object>> articles = getArticlesForResult(result);
         model.put("metaEntity", author);
-        return dispatch(response, model, Arrays.asList("friendly/" + site), articles);
+        return dispatch(request, response, model, Arrays.asList("friendly/" + site), articles);
     }
 
     @RequestMapping(value = "{path:(?!websocket|webjars|wro4j|static|error).*$}/**")
@@ -70,15 +73,13 @@ public class DispatcherController {
             contentPath.add("friendly/" + s);
         });
 
-        return dispatch(response, model, contentPath, null);
+        return dispatch(request, response, model, contentPath, null);
     }
 
-    private String dispatch(HttpServletResponse response, Map<String, Object> model, List<String> contentPath, List<Map<String, Object>> articles) {
-        response.addHeader("Cache-Control", "max-age=5");
+    private String dispatch(HttpServletRequest request, HttpServletResponse response, Map<String, Object> model, List<String> contentPath, List<Map<String, Object>> articles) {
+        request.setAttribute("stats", stats);
 
-        ContentApi.totalContentGets = 0;
-        ContentApi.uncachedContentGets = 0;
-        ContentApi.ids.clear();
+        response.addHeader("Cache-Control", "max-age=5");
 
         // Get contents for content path
         List<Map<String, Object>> contents = contentApi.batch(contentPath);
@@ -195,15 +196,12 @@ public class DispatcherController {
         model.put("utils", new Utils());
         model.put("date", new DateUtil());
 
-        System.out.println("total gets: " + ContentApi.totalContentGets + ", uncached gets: " + ContentApi.uncachedContentGets + ", unique contents: " + ContentApi.ids.size());
-
         // Dispatch to correct template based on type
         if (article != null) {
             return "article";
         } else {
             return "section";
         }
-
     }
 
     private Map<String, String> createTracker(Map<String, Object> site, Map<String, Object> section, Map<String, Object> article) {
