@@ -58,22 +58,19 @@ public class BreakingNewsController {
     @Autowired
     private SimpMessagingTemplate template;
 
-    @EventListener(condition = "#event.draft == false and #event.type == 'mutation'")
+//    @EventListener(condition = "#event.draft == false and #event.type == 'mutation'")
     public void update(ContentEventListener.ContentEvent event) {
         String contentId = event.getId();
-        boolean liveUpdatesEnabled = true;
-        if (liveUpdatesEnabled) {
-            Map<String, Object> content = contentApi.getContent(contentId);
-            String type = ContentMapUtil.getType(content);
-            if ("web-article".equals(type)) {
-                String title = ContentMapUtil.getTitle(content);
-                String lead = ContentMapUtil.getString(content, "aspects.contentData.data.lead");
-                if (title != null && title.toUpperCase().startsWith("EXTRA:")) {
-                    DispatcherController.ContentUrlCreator urlCreator = new DispatcherController.ContentUrlCreator(contentApi);
-                    String url = urlCreator.create(contentId.substring("contentid/".length()));
-                    BreakingNewsController.BreakingArticle breakingArticle = new BreakingNewsController.BreakingArticle(title, lead, url);
-                    template.convertAndSend("/topic/breaking", breakingArticle);
-                }
+        Map<String, Object> content = contentApi.getContent(contentId);
+        String type = ContentMapUtil.getType(content);
+        if ("web-article".equals(type)) {
+            String title = ContentMapUtil.getTitle(content);
+            String lead = ContentMapUtil.getString(content, "aspects.contentData.data.lead");
+            if (title != null && title.toUpperCase().startsWith("EXTRA:")) {
+                DispatcherController.ContentUrlCreator urlCreator = new DispatcherController.ContentUrlCreator(contentApi);
+                String url = urlCreator.create(contentId.substring("contentid/".length()));
+                BreakingNewsController.BreakingArticle breakingArticle = new BreakingNewsController.BreakingArticle(title, lead, url);
+                template.convertAndSend("/topic/breaking", breakingArticle);
             }
         }
     }
