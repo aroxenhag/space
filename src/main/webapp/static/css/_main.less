@@ -303,15 +303,26 @@ h1, h2, h3, h4, h5, h6 {
 
 .ad-placeholder {
   background-color: @adColor;
-  border: 1px solid darken(@adColor, 10%);
   font-size: 14px;
-  color: rgba(0, 0, 0, .2);
+  color: rgba(255, 255, 255, .8);
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  position: relative;
 }
 
-.ad-placeholder .dimensions {
+.ad-placeholder-clip {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%);
+  background-color: lighten(@adColor, 10%);
+}
+
+.ad-placeholder .ad-placeholder-text {
+  position: relative;
+  z-index: 1;
 }
 
 .main-col .ad-placeholder {
