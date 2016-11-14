@@ -12,7 +12,9 @@
 
     <div class="row">
         <div class="col-md-9 main-col">
-            <div class="meta-entity" th:unless="${utils.isEmpty(metaEntity)}" th:text="${metaEntity}"></div>
+            <div class="meta-entity" th:unless="${utils.isEmpty(metaEntityName)}">
+                <span class="meta-entity-label" th:text="${metaEntityLabel}"></span> | <span class="meta-entity-name" th:text="${metaEntityName}"></span>
+            </div>
             <div class="empty" th:if="${utils.isEmpty(rows)}">
                 This section appears to be empty
             </div>

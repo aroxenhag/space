@@ -49,7 +49,8 @@ public class DispatcherController {
         LogStatsFilter.getStats().initialize();
         Map<String, Object> result = contentApi.search("tags_ss:" + tag, 100);
         List<String> articleIds = getContentIdsForResult(result);
-        model.put("metaEntity", tag);
+        model.put("metaEntityLabel", "About");
+        model.put("metaEntityName", tag);
         return dispatch(response, model, Arrays.asList("friendly/" + site), articleIds);
     }
 
@@ -58,7 +59,8 @@ public class DispatcherController {
         LogStatsFilter.getStats().initialize();
         Map<String, Object> result = contentApi.search("byline_s:" + author, 100);
         List<String> articleIds = getContentIdsForResult(result);
-        model.put("metaEntity", author);
+        model.put("metaEntityLabel", "By");
+        model.put("metaEntityName", author);
         return dispatch(response, model, Arrays.asList("friendly/" + site), articleIds);
     }
 
