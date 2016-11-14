@@ -107,6 +107,7 @@ public class DispatcherController {
         model.put("article", article);
         model.put("ga_tracker", createTracker(site, section, article));
 
+
         // Get all top level sections for navigation
         List sectionIds = (List) ContentMapUtil.getObject(site, "aspects.contentData.data.sections");
         List<Map<String, Object>> sections = new ArrayList<>();
@@ -129,6 +130,7 @@ public class DispatcherController {
         // Get most recent articles for current section (and its subsections)
         // NOTE: Need to use both uuids and resolved content ids for parents to find all articles
         List<String> pageArticleIds = articleIds; // Get from param. If null, use most recent articles from section
+        boolean isCategoryLandingPage = pageArticleIds != null;
         if (pageArticleIds == null) {
             List<String> currentSectionSubSectionIds = new ArrayList<>();
             addAllSubSectionIds(contentApi, section, currentSectionSubSectionIds);
@@ -164,7 +166,7 @@ public class DispatcherController {
             rowConfigStr = rowConfigStr.trim();
 
             Map<String, Object> rowConfig = new HashMap<>();
-            int articleCount = -1;
+            int articleCount;
             if (rowConfigStr.endsWith("*")) {
                 articleCount = Integer.parseInt(rowConfigStr.substring(0, rowConfigStr.length() - 1));
                 rowConfig.put("type", "carousel");
@@ -175,6 +177,10 @@ public class DispatcherController {
             List<Map<String, Object>> rowContent = new ArrayList<>();
             for (int i = 0; i < articleCount; i++) {
                 if (articleIndex >= pageArticleIds.size()) {
+                    if (isCategoryLandingPage) {
+                        rowConfig.put("content", rowContent);
+                        rows.add(rowConfig);
+                    }
                     break outer;
                 }
                 rowContent.add(contentApi.getContent(pageArticleIds.get(articleIndex++)));
