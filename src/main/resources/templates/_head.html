@@ -12,16 +12,12 @@
 
     <title th:text="${site.aspects.contentData.data.title} + ' - ' + ${section.aspects.contentData.data.title}">Page title...</title>
 
-    <link href="/webjars/bootstrap/4.0.0-alpha.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/webjars/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" rel="stylesheet">
     <link th:href="'/wro4j/' + ${site.aspects.contentData.data.friendlyAlias} + '.css'" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Abril+Fatface" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=UnifrakturMaguntia" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Open+Sans:400,400i,700,700i" rel="stylesheet">
 
     <script th:src="'/wro4j/' + ${site.aspects.contentData.data.friendlyAlias} + '.js'"></script>
-    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
-    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 </head>
 
 <body>
