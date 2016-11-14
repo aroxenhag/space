@@ -79,6 +79,15 @@ public class DispatcherApplication {
         }
     }
 
+    @Value("${kafka.host}")
+    private String kafkaHost;
+
+    @Value("${kafka.port}")
+    private int kafkaPort;
+
+    @Value("${kafka.groupId}")
+    private String kafkaGroupId;
+
     @Bean
     KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<Integer, String>>
     kafkaListenerContainerFactory() {
@@ -94,15 +103,6 @@ public class DispatcherApplication {
     public ConsumerFactory<Integer, String> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
-
-    @Value("${kafka.host}")
-    private String kafkaHost;
-
-    @Value("${kafka.port}")
-    private int kafkaPort;
-
-    @Value("${kafka.groupId}")
-    private String kafkaGroupId;
 
     @Bean
     public Map<String, Object> consumerConfigs() {

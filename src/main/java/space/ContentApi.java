@@ -25,10 +25,7 @@ import java.util.regex.Pattern;
 public class ContentApi {
 
     @Value("${content-api-base-url}")
-    private String contentApiBaseUrl = "http://localhost:8080";
-
-    @Autowired
-    Stats stats;
+    private String contentApiBaseUrl;
 
     @Autowired
     ContentApiInternal contentApiInternal;
@@ -41,22 +38,22 @@ public class ContentApi {
     // returns versioned id
     public String resolveSymbolicId(String id) {
         String unversionedId = contentApiInternal.resolveSymbolicId(id);
-        return contentApiInternal.resolveUnversionedId(unversionedId);
+        return resolveUnversionedId(unversionedId);
     }
 
     public String resolveUnversionedId(String id) {
-        stats.addId(id);
         return contentApiInternal.resolveUnversionedId(id);
     }
 
     public Map<String, Object> getContent(String id) {
-        stats.incGet();
-
         if (isSymbolicId(id)) {
             id = resolveSymbolicId(id);
         } else if (!isVersionedId(id)) {
             id = resolveUnversionedId(id);
         }
+
+        LogStatsFilter.getStats().incGet();
+        LogStatsFilter.getStats().addId(unversioned(id));
 
         return contentApiInternal.getContentVersion(id);
     }
@@ -103,6 +100,26 @@ public class ContentApi {
 
     @Component
     class ContentApiInternal {
+        // Returns unversioned id. Populates unversioned to versioned mapping.
+        @Cacheable("alias")
+        public String resolveSymbolicId(String id) {
+            String versionedId = resolve(id);
+            String unversionedId = unversioned(versionedId);
+            cachePutUnversionedMapping(unversionedId, versionedId);
+            return unversionedId;
+        }
+
+        @Cacheable("unversioned")
+        public String resolveUnversionedId(String id) {
+            return resolve(id);
+        }
+
+        @CachePut(cacheNames = "unversioned", key = "#unversionedId")
+        String cachePutUnversionedMapping(String unversionedId, String versionedId) {
+            // Just here to populate cache
+            return versionedId;
+        }
+
         @CacheEvict("unversioned")
         public void evictUnversionedId(String id) {
             // Intentionally left empty
@@ -111,7 +128,7 @@ public class ContentApi {
         @Cacheable("content")
         public Map<String, Object> getContentVersion(String id) {
 
-            stats.incUncachedGet();
+            LogStatsFilter.getStats().incUncachedGet();
 
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpGet httpGet = new HttpGet(contentApiBaseUrl + "/content/" + id + "?variant=web");
@@ -124,15 +141,6 @@ public class ContentApi {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
-
-        // returns unversioned id, populates unversioned to versioned mapping
-        @Cacheable("alias")
-        public String resolveSymbolicId(String id) {
-            String versionedId = resolve(id);
-            String unversionedId = unversioned(versionedId);
-            cachePutUnversionedMapping(unversionedId, versionedId);
-            return unversionedId;
         }
 
         private String resolve(String id) {
@@ -154,18 +162,6 @@ public class ContentApi {
             } catch (Exception e) {
                 throw new RuntimeException("Error resolving id: " + id, e);
             }
-        }
-
-        @CachePut(cacheNames = "unversioned", key = "#unversionedId")
-        String cachePutUnversionedMapping(String unversionedId, String versionedId) {
-            // Just here to populate cache
-            return versionedId;
-        }
-
-        @Cacheable("unversioned")
-        public String resolveUnversionedId(String id) {
-            String resolved = resolve(id);
-            return resolved;
         }
     }
 

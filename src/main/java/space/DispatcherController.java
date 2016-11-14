@@ -31,8 +31,8 @@ public class DispatcherController {
     @Autowired
     private ContentApi contentApi;
 
-    @Autowired
-    Stats stats;
+//    @Autowired(required = false)
+//    Stats stats;
 
     @Value("${image-service-base-url}")
     private String imageServiceBaseUrl;
@@ -49,22 +49,25 @@ public class DispatcherController {
 
     @RequestMapping(value = "/{site}/about/{tag}")
     public String about(@PathVariable("site") String site, @PathVariable("tag") String tag, HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
+        LogStatsFilter.getStats().initialize();
         Map<String, Object> result = contentApi.search("tags_ss:" + tag);
         List<Map<String, Object>> articles = getArticlesForResult(result);
         model.put("metaEntity", tag);
-        return dispatch(request, response, model, Arrays.asList("friendly/" + site), articles);
+        return dispatch(response, model, Arrays.asList("friendly/" + site), articles);
     }
 
     @RequestMapping(value = "/{site}/by/{author}")
     public String by(@PathVariable("site") String site, @PathVariable("author") String author, HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
+        LogStatsFilter.getStats().initialize();
         Map<String, Object> result = contentApi.search("byline_s:" + author);
         List<Map<String, Object>> articles = getArticlesForResult(result);
         model.put("metaEntity", author);
-        return dispatch(request, response, model, Arrays.asList("friendly/" + site), articles);
+        return dispatch(response, model, Arrays.asList("friendly/" + site), articles);
     }
 
     @RequestMapping(value = "{path:(?!websocket|webjars|wro4j|static|error).*$}/**")
     public String dispatch(HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
+        LogStatsFilter.getStats().initialize();
 
         // Get content path
         List<String> friendlyAliasPath = getFriendlyAliasPath(request);
@@ -73,12 +76,11 @@ public class DispatcherController {
             contentPath.add("friendly/" + s);
         });
 
-        return dispatch(request, response, model, contentPath, null);
+        return dispatch(response, model, contentPath, null);
     }
 
-    private String dispatch(HttpServletRequest request, HttpServletResponse response, Map<String, Object> model, List<String> contentPath, List<Map<String, Object>> articles) {
-        request.setAttribute("stats", stats);
-
+    private String dispatch(HttpServletResponse response, Map<String, Object> model, List<String> contentPath, List<Map<String, Object>> articles) {
+        // Just testing giving responses a general 5s cache time
         response.addHeader("Cache-Control", "max-age=5");
 
         // Get contents for content path
