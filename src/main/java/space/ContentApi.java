@@ -81,12 +81,12 @@ public class ContentApi {
         return id;
     }
 
-    public Map<String, Object> search(String q) {
+    public Map<String, Object> search(String q, int limit) {
 
         HttpClient httpClient = HttpClientBuilder.create().build();
         try {
             String encodedQuery = URLEncoder.encode(q, "UTF-8");
-            HttpGet httpGet = new HttpGet(contentApiBaseUrl + "/search/onecms/select?q=" + encodedQuery + "&view=the-localhost&wt=json&rows=50&sort=publishDate_dt+desc");
+            HttpGet httpGet = new HttpGet(contentApiBaseUrl + "/search/onecms/select?q=" + encodedQuery + "&view=the-localhost&wt=json&rows=" + limit + "&sort=publishDate_dt+desc");
             setAuthHeader(httpGet);
             HttpResponse response = httpClient.execute(httpGet);
             String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");

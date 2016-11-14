@@ -45,21 +45,21 @@ public class DispatcherController {
     }
 
     @RequestMapping(value = "/{site}/about/{tag}")
-    public String about(@PathVariable("site") String site, @PathVariable("tag") String tag, HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
+    public String about(@PathVariable("site") String site, @PathVariable("tag") String tag, HttpServletResponse response, Map<String, Object> model) {
         LogStatsFilter.getStats().initialize();
-        Map<String, Object> result = contentApi.search("tags_ss:" + tag);
-        List<Map<String, Object>> articles = getArticlesForResult(result);
+        Map<String, Object> result = contentApi.search("tags_ss:" + tag, 100);
+        List<String> articleIds = getContentIdsForResult(result);
         model.put("metaEntity", tag);
-        return dispatch(response, model, Arrays.asList("friendly/" + site), articles);
+        return dispatch(response, model, Arrays.asList("friendly/" + site), articleIds);
     }
 
     @RequestMapping(value = "/{site}/by/{author}")
-    public String by(@PathVariable("site") String site, @PathVariable("author") String author, HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
+    public String by(@PathVariable("site") String site, @PathVariable("author") String author, HttpServletResponse response, Map<String, Object> model) {
         LogStatsFilter.getStats().initialize();
-        Map<String, Object> result = contentApi.search("byline_s:" + author);
-        List<Map<String, Object>> articles = getArticlesForResult(result);
+        Map<String, Object> result = contentApi.search("byline_s:" + author, 100);
+        List<String> articleIds = getContentIdsForResult(result);
         model.put("metaEntity", author);
-        return dispatch(response, model, Arrays.asList("friendly/" + site), articles);
+        return dispatch(response, model, Arrays.asList("friendly/" + site), articleIds);
     }
 
     @RequestMapping(value = "{path:(?!websocket|webjars|wro4j|static|error).*$}/**")
@@ -76,7 +76,7 @@ public class DispatcherController {
         return dispatch(response, model, contentPath, null);
     }
 
-    private String dispatch(HttpServletResponse response, Map<String, Object> model, List<String> contentPath, List<Map<String, Object>> articles) {
+    private String dispatch(HttpServletResponse response, Map<String, Object> model, List<String> contentPath, List<String> articleIds) {
         // Just testing giving responses a general 5s cache time
         response.addHeader("Cache-Control", "max-age=5");
 
@@ -121,20 +121,19 @@ public class DispatcherController {
         // Get top articles for site for top list
         List<String> siteSubSectionIds = new ArrayList<>();
         addAllSubSectionIds(contentApi, site, siteSubSectionIds);
-        Map siteArticlesResult = contentApi.search("type:article AND parentId_s:(" + String.join(" ", siteSubSectionIds) + ")");
-        List<Map<String, Object>> siteTopArticles = getArticlesForResult(siteArticlesResult);
-        model.put("topArticles", siteTopArticles);
+        Map siteArticlesResult = contentApi.search("type:article AND parentId_s:(" + String.join(" ", siteSubSectionIds) + ")", 50);
+        List<String> siteTopArticleIds = getContentIdsForResult(siteArticlesResult);
+        model.put("topArticles", contentApi.batch(siteTopArticleIds.subList(0, Math.min(10, siteTopArticleIds.size()))));
 
 
         // Get most recent articles for current section (and its subsections)
-        // NOTE: Since the parent ids are the uuids that are never resolved to real ids,
-        // we have to use the uuids here.
-        List<Map<String, Object>> pageArticles = articles; // Get from param. If null, use most recent articles from section
-        if (pageArticles == null) {
+        // NOTE: Need to use both uuids and resolved content ids for parents to find all articles
+        List<String> pageArticleIds = articleIds; // Get from param. If null, use most recent articles from section
+        if (pageArticleIds == null) {
             List<String> currentSectionSubSectionIds = new ArrayList<>();
             addAllSubSectionIds(contentApi, section, currentSectionSubSectionIds);
-            Map currentSectionArticlesResult = contentApi.search("type:article AND parentId_s:(" + String.join(" ", currentSectionSubSectionIds) + ")");
-            pageArticles = getArticlesForResult(currentSectionArticlesResult);
+            Map currentSectionArticlesResult = contentApi.search("type:article AND parentId_s:(" + String.join(" ", currentSectionSubSectionIds) + ")", 50);
+            pageArticleIds = getContentIdsForResult(currentSectionArticlesResult);
         }
 
 
@@ -175,10 +174,10 @@ public class DispatcherController {
             }
             List<Map<String, Object>> rowContent = new ArrayList<>();
             for (int i = 0; i < articleCount; i++) {
-                if (articleIndex >= pageArticles.size()) {
+                if (articleIndex >= pageArticleIds.size()) {
                     break outer;
                 }
-                rowContent.add(pageArticles.get(articleIndex++));
+                rowContent.add(contentApi.getContent(pageArticleIds.get(articleIndex++)));
             }
             rowConfig.put("content", rowContent);
             rows.add(rowConfig);
@@ -211,14 +210,13 @@ public class DispatcherController {
         return tracker;
     }
 
-    private List<Map<String, Object>> getArticlesForResult(Map currentSectionArticlesResult) {
-        List docs = (List) ContentMapUtil.getObject(currentSectionArticlesResult, "response.docs");
-        List<Map<String, Object>> articles = new ArrayList<>();
+    private List<String> getContentIdsForResult(Map<String, Object> searchResult) {
+        List<Map<String, Object>> docs = (List) ContentMapUtil.getObject(searchResult, "response.docs");
+        List<String> ids = new ArrayList<>();
         docs.forEach(doc -> {
-            String articleId = ContentMapUtil.getString((Map<String, Object>) doc, "id");
-            articles.add(contentApi.getContent("contentid/" + contentApi.unversioned(articleId)));
+            ids.add("contentid/" + ContentMapUtil.getString(doc, "id"));
         });
-        return articles;
+        return ids;
     }
 
     private void addAllSubSectionIds(ContentApi contentApi, Map<String, Object> section, List<String> allSectionIds) {

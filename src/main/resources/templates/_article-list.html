@@ -4,7 +4,7 @@
 <body class="article-list">
 <h4 class="top-articles-header">Latest News</h4>
 <ol class="top-articles">
-    <li th:each="article, stat : ${topArticles}" class="nav-item" th:unless="${stat.index >= 10}">
+    <li th:each="article, stat : ${topArticles}" class="nav-item">
         <a th:text="${article.aspects.contentData.data.title}" th:href="${curl.create(article.id)}"
            href="#">Article link...</a>
         <time th:unless="${utils.isEmpty(article, 'aspects.contentData.data.published')}"
