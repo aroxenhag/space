@@ -31,9 +31,6 @@ public class DispatcherController {
     @Autowired
     private ContentApi contentApi;
 
-//    @Autowired(required = false)
-//    Stats stats;
-
     @Value("${image-service-base-url}")
     private String imageServiceBaseUrl;
 
