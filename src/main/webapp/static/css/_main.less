@@ -249,19 +249,19 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 12px;
   text-transform: uppercase;
   display: inline-block;
-  background-color: lighten(@primaryColor, 10%);
+  background-color: @primaryColor;
   margin: 0 12px 6px 0;
 }
 
 .article .tags li a {
-  padding: 6px;
+  padding: 6px 12px;
   color: #fff;
   display: block;
 }
 
 .article .tags li a:hover {
   color: #fff;
-  background-color: lighten(@primaryColor, 20%);
+  background-color: lighten(@primaryColor, 10%);
 }
 
 .article .byline {
@@ -383,14 +383,22 @@ img {
 }
 
 .meta-entity {
-  font-size: 18px;
+  font-size: 25px;
   text-align: center;
-  padding: 12px 0 8px;
   text-transform: uppercase;
-  background-color: lighten(@primaryColor, 10%);
-  border-bottom: 6px solid @primaryColor;
   color: #fff;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
+}
+
+.meta-entity-content {
+  background-color: @primaryColor;
+  padding: 6px 16px 6px 24px;
+  clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%);
+  -webkit-clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.meta-entity-content span {
+  display: inline-block;
 }
 
 .meta-entity-label {
