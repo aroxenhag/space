@@ -33,7 +33,7 @@
                 <span class="section-title" th:text="${section.aspects.contentData.data.title}">Section title...</span>
                 <span th:unless="${utils.isEmpty(article, 'aspects.contentData.data.lead')}" th:utext="${article.aspects.contentData.data.lead}">Article lead...</span>
             </div>
-            <ul class="tags" th:unless="${utils.isEmpty(article, 'aspects.contentData.data.tags')}">
+            <ul class="tags clearfix" th:unless="${utils.isEmpty(article, 'aspects.contentData.data.tags')}">
                 <li th:each="tag : ${article.aspects.contentData.data.tags}">
                     <a href="#" th:href="${lpage.create(site, 'about', tag)}" th:text="${tag}">Tag...</a>
                 </li>
