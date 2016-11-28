@@ -321,14 +321,14 @@ public class DispatcherController {
             this.contentApi = contentApi;
         }
 
-        // Supports jpg in 2:1 format
+        // Supports jpg in 2:1 format, scaled down to 1024px width if necessary
         public String create(String id) {
             if (contentApi.isSymbolicId(id)) {
                 id = contentApi.resolveSymbolicId(id);
             } else if (!id.startsWith("contentid/")) {
                 id = "contentid/" + id;
             }
-            return imageServiceBaseUrl + "/" + id + "/image.jpg?f=2x1";
+            return imageServiceBaseUrl + "/" + id + "/image.jpg?f=2x1&w=1024";
         }
     }
 }
