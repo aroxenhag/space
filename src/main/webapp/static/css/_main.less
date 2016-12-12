@@ -293,13 +293,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .article .body a {
-  border-bottom: 3px solid @articleLinkColor;
-  box-shadow: inset 0 -4px 0 @articleLinkColor;
+  border-bottom: 1px solid @articleLinkColor;
+  box-shadow: inset 0 -3px 0 @articleLinkColor;
   color: inherit;
 }
 
 .article .body a:hover {
   background-color: @articleLinkColor;
+  border-bottom: none;
+  box-shadow: none;
   color: inherit;
 }
 
@@ -394,7 +396,7 @@ img {
 
 .meta-entity-content {
   background-color: @primaryColor;
-  padding: 6px 16px 6px 24px;
+  padding: 6px 16px 6px 26px;
   clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%);
   -webkit-clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%);
 }
