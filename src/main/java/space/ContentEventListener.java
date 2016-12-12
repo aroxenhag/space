@@ -17,9 +17,13 @@ public class ContentEventListener {
     @KafkaListener(topics = "polopoly.changelist")
     public void listen(String event) {
         String payload = (String) new Gson().fromJson(event, Map.class).get("payload");
-        ContentEvent contentEvent = new ContentEvent(payload);
-        System.out.println(contentEvent);
-        publisher.publishEvent(contentEvent);
+        System.out.println(payload);
+        try {
+            ContentEvent contentEvent = new ContentEvent(payload);
+            publisher.publishEvent(contentEvent);
+        } catch (Exception e) {
+            // TODO: Let's ignore unparseable payloads for now.
+        }
     }
 
     class ContentEvent {
