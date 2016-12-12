@@ -2,6 +2,7 @@ package space;
 
 import com.google.gson.Gson;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -72,6 +73,12 @@ public class ContentApi {
         return id.startsWith("uuid/") || id.startsWith("friendly/");
     }
 
+    public boolean isVersionedId(String id) {
+        Pattern pattern = Pattern.compile("(.*:.*):.*");
+        Matcher matcher = pattern.matcher(id);
+        return matcher.matches();
+    }
+
     public static String unversioned(String id) {
         Pattern pattern = Pattern.compile("(.*:.*):.*");
         Matcher matcher = pattern.matcher(id);
@@ -91,8 +98,7 @@ public class ContentApi {
             HttpResponse response = httpClient.execute(httpGet);
             String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
 
-            Map<String, Object> map = new Gson().fromJson(responseString, Map.class);
-            return map;
+            return new Gson().fromJson(responseString, Map.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -145,20 +151,24 @@ public class ContentApi {
 
         private String resolve(String id) {
             HttpClient httpClient = HttpClientBuilder.create().disableRedirectHandling().build();
-            String url = contentApiBaseUrl + "/content/view/the-localhost/" + id + "?variant=web"; // TODO: Don't really care about variant here
+            String url = contentApiBaseUrl + "/content/view/the-localhost/" + id;
             HttpGet httpGet = new HttpGet(url);
             setAuthHeader(httpGet);
             try {
                 HttpResponse response = httpClient.execute(httpGet);
 
-                String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_SEE_OTHER) {
+                    String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
 
-                Map<String, String> map = new Gson().fromJson(responseString, Map.class);
-                String location = map.get("location");
+                    Map<String, String> map = new Gson().fromJson(responseString, Map.class);
+                    String location = map.get("location");
 
-                String versionedId = "contentid/" + location.substring("/ace/content/contentid/".length(), location.indexOf("?"));
+                    String versionedId = location.substring("/ace/content/".length());
 
-                return versionedId;
+                    return versionedId;
+                } else {
+                    throw new RuntimeException("Error resolving id on relevant view: " + id);
+                }
             } catch (Exception e) {
                 throw new RuntimeException("Error resolving id: " + id, e);
             }
@@ -167,11 +177,5 @@ public class ContentApi {
 
     private void setAuthHeader(HttpGet httpGet) {
         httpGet.setHeader("X-Auth-Token", DispatcherApplication.AUTH_TOKEN);
-    }
-
-    private boolean isVersionedId(String id) {
-        Pattern pattern = Pattern.compile("(.*:.*):.*");
-        Matcher matcher = pattern.matcher(id);
-        return matcher.matches();
     }
 }
