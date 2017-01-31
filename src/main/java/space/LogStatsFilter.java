@@ -1,5 +1,7 @@
 package space;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.Filter;
@@ -14,6 +16,9 @@ import java.util.Set;
 
 @Component
 public class LogStatsFilter implements Filter {
+
+    @Autowired
+    private CounterService counterService;
 
     private final static ThreadLocal<Stats> stats = new ThreadLocal<Stats>() {
         @Override
@@ -38,6 +43,7 @@ public class LogStatsFilter implements Filter {
         filterChain.doFilter(servletRequest, servletResponse);
 
         if (getStats().isInitialized()) {
+            counterService.increment("space.gets");
             System.out.println(getStats().getStats());
         }
     }

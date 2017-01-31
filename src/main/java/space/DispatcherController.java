@@ -197,7 +197,7 @@ public class DispatcherController {
         // Add generic utilities
         model.put("curl", new ContentUrlCreator(contentApi));
         model.put("lpage", new LandingPageUrlCreator());
-        model.put("iurl", new ImageUrlCreator(contentApi));
+        model.put("iurl", new ImageUrlCreator(contentApi, imageServiceBaseUrl));
         model.put("contentApi", contentApi);
         model.put("utils", new Utils());
         model.put("date", new DateUtil());
@@ -314,11 +314,13 @@ public class DispatcherController {
         }
     }
 
-    class ImageUrlCreator {
+    static class ImageUrlCreator {
         private ContentApi contentApi;
+        private String baseUrl;
 
-        public ImageUrlCreator(ContentApi contentApi) {
+        public ImageUrlCreator(ContentApi contentApi, String baseUrl) {
             this.contentApi = contentApi;
+            this.baseUrl = baseUrl;
         }
 
         // Supports jpg in 2:1 format, scaled down to 1024px width if necessary
@@ -336,7 +338,7 @@ public class DispatcherController {
                     }
                 }
 
-                return imageServiceBaseUrl + "/" + id + "/image.jpg?f=2x1&w=1024";
+                return baseUrl + "/" + id + "/image.jpg?f=2x1&w=1024";
             } catch (Exception e) {
                 return null;
             }
