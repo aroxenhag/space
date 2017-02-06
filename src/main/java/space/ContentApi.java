@@ -70,7 +70,7 @@ public class ContentApi {
     }
 
     public boolean isSymbolicId(String id) {
-        return id.startsWith("uuid/") || id.startsWith("friendly/");
+        return id.startsWith("uuid/") || id.startsWith("friendly/") || id.startsWith("ace-starterkit/");
     }
 
     public boolean isVersionedId(String id) {
@@ -93,7 +93,7 @@ public class ContentApi {
         HttpClient httpClient = HttpClientBuilder.create().build();
         try {
             String encodedQuery = URLEncoder.encode(q, "UTF-8");
-            HttpGet httpGet = new HttpGet(contentApiBaseUrl + "/search/onecms/select?fl=id&q=" + encodedQuery + "&view=the-localhost&wt=json&rows=" + limit + "&sort=publishDate_dt+desc");
+            HttpGet httpGet = new HttpGet(contentApiBaseUrl + "/search/onecms/select?fl=id&q=" + encodedQuery + "&view=p.public&wt=json&rows=" + limit + "&sort=publishDate_dt+desc");
             setAuthHeader(httpGet);
             HttpResponse response = httpClient.execute(httpGet);
             String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
@@ -111,6 +111,7 @@ public class ContentApi {
         public String resolveSymbolicId(String id) {
             String versionedId = resolve(id);
             String unversionedId = unversioned(versionedId);
+            unversionedId = unversionedId.replaceAll("version", "contentid");
             cachePutUnversionedMapping(unversionedId, versionedId);
             return unversionedId;
         }
@@ -151,7 +152,7 @@ public class ContentApi {
 
         private String resolve(String id) {
             HttpClient httpClient = HttpClientBuilder.create().disableRedirectHandling().build();
-            String url = contentApiBaseUrl + "/content/view/the-localhost/" + id;
+            String url = contentApiBaseUrl + "/content/view/p.public/" + id;
             HttpGet httpGet = new HttpGet(url);
             setAuthHeader(httpGet);
             try {

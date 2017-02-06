@@ -222,7 +222,7 @@ public class DispatcherController {
         List<Map<String, Object>> docs = (List) ContentMapUtil.getObject(searchResult, "response.docs");
         List<String> ids = new ArrayList<>();
         docs.forEach(doc -> {
-            ids.add("contentid/" + ContentMapUtil.getString(doc, "id"));
+            ids.add(ContentApi.unversioned("contentid/" + ContentMapUtil.getString(doc, "id")));
         });
         return ids;
     }
@@ -335,6 +335,8 @@ public class DispatcherController {
                         id = contentApi.resolveUnversionedId(id);
                     }
                 }
+
+                id = id.replaceAll("version", "contentid");
 
                 return imageServiceBaseUrl + "/" + id + "/image.jpg?f=2x1&w=1024";
             } catch (Exception e) {
