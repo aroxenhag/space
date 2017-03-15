@@ -57,7 +57,7 @@ public class DispatcherController {
     @RequestMapping(value = "/{site}/by/{author}")
     public String by(@PathVariable("site") String site, @PathVariable("author") String author, HttpServletResponse response, Map<String, Object> model) {
         LogStatsFilter.getStats().initialize();
-        Map<String, Object> result = contentApi.search("byline_s:" + author, 100);
+        Map<String, Object> result = contentApi.search("byline_friendly_s:" + author, 100);
         List<String> articleIds = getContentIdsForResult(result);
         model.put("metaEntityLabel", "By");
         model.put("metaEntityName", author);
@@ -100,7 +100,7 @@ public class DispatcherController {
             String type = ContentMapUtil.getType(content);
             if ("web-section".equals(type)) {
                 section = content;
-            } else if ("article".equals(type)) {
+            } else if ("article".equals(type)) { // TODO: Change to "web-article" when it is possible to set that in the composer
                 article = content;
             }
         }
