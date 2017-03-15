@@ -25,6 +25,10 @@ public class ContentMapUtil {
         return getString(map, "id");
     }
 
+    public static String getVersion(Map<String, Object> map) {
+        return getString(map, "version");
+    }
+
     public static String getType(Map<String, Object> map) {
         return getString(map, "aspects.contentData.data._type");
     }

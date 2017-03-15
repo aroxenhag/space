@@ -100,7 +100,7 @@ public class DispatcherController {
             String type = ContentMapUtil.getType(content);
             if ("web-section".equals(type)) {
                 section = content;
-            } else if ("web-article".equals(type)) {
+            } else if ("article".equals(type)) {
                 article = content;
             }
         }
@@ -222,14 +222,14 @@ public class DispatcherController {
         List<Map<String, Object>> docs = (List) ContentMapUtil.getObject(searchResult, "response.docs");
         List<String> ids = new ArrayList<>();
         docs.forEach(doc -> {
-            ids.add(ContentApi.unversioned("contentid/" + ContentMapUtil.getString(doc, "id")));
+            ids.add(ContentMapUtil.getString(doc, "id"));
         });
         return ids;
     }
 
     private void addAllSubSectionIds(ContentApi contentApi, Map<String, Object> section, List<String> allSectionIds) {
         allSectionIds.add(ContentMapUtil.getUUID(section));
-        allSectionIds.add("contentid/" + ContentMapUtil.getId(section).replaceAll(":", "\\\\:"));
+        allSectionIds.add(ContentMapUtil.getId(section).replaceAll(":", "\\\\:"));
         List<String> subSectionIds = (List) ContentMapUtil.getObject(section, "aspects.contentData.data.sections");
         if (subSectionIds != null) {
             for (String subSectionId : subSectionIds) {
@@ -294,7 +294,6 @@ public class DispatcherController {
 
         public String create(String id) {
             List<String> friendlyAliases = new ArrayList<>();
-            id = "contentid/" + id;
             while (true) {
                 Map<String, Object> content = contentApi.getContent(id);
                 friendlyAliases.add(0, ContentMapUtil.getFriendlyAlias(content));
@@ -324,21 +323,21 @@ public class DispatcherController {
         // Supports jpg in 2:1 format, scaled down to 1024px width if necessary
         public String create(String id) {
             try {
-                if (contentApi.isSymbolicId(id)) {
-                    id = contentApi.resolveSymbolicId(id);
-                } else {
-                    if (!id.startsWith("contentid/")) {
-                        id = "contentid/" + id;
-                    }
+//                if (contentApi.isSymbolicId(id)) {
+//                    id = contentApi.resolveSymbolicId(id);
+//                } else {
+//                    if (!id.startsWith("contentid/")) {
+//                        id = "contentid/" + id;
+//                    }
+//
+//                    if (!contentApi.isVersionedId(id)) {
+//                        id = contentApi.resolveUnversionedId(id);
+//                    }
+//                }
+//
+//                id = id.replaceAll("version", "contentid");
 
-                    if (!contentApi.isVersionedId(id)) {
-                        id = contentApi.resolveUnversionedId(id);
-                    }
-                }
-
-                id = id.replaceAll("version", "contentid");
-
-                return imageServiceBaseUrl + "/" + id + "/image.jpg?f=2x1&w=1024";
+                return imageServiceBaseUrl + "/alias/" + id + "/image.jpg?f=2x1&w=1024";
             } catch (Exception e) {
                 return null;
             }

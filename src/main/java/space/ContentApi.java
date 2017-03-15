@@ -46,19 +46,37 @@ public class ContentApi {
         return contentApiInternal.resolveUnversionedId(id);
     }
 
-    public Map<String, Object> getContent(String id) {
-        if (isSymbolicId(id)) {
-            id = resolveSymbolicId(id);
-        } else if (!isVersionedId(id)) {
-            id = resolveUnversionedId(id);
+    // not for content versions.
+    public Map<String, Object> getContent(String alias) {
+        // resolve to versioned id. return content
+        // alias -> content id -> content version
+
+        if (isVersionedId(alias)) {
+            return contentApiInternal.getContentVersion(alias);
+        } else {
+            // if other alias than contentid, resolve to content id
+            String version;
+            if (!alias.startsWith("contentid/")) {
+                version = resolveSymbolicId(alias);
+            } else {
+                version = resolveUnversionedId(alias);
+            }
+
+
+    //        if (isSymbolicId(alias)) {
+    //            alias = resolveSymbolicId(alias);
+    //        } else if (!isVersionedId(alias)) {
+    //            alias = resolveUnversionedId(alias);
+    //        }
+
+
+    //        LogStatsFilter.getStats().incGet();
+    //        LogStatsFilter.getStats().addId(unversioned(alias));
+
+
+            return contentApiInternal.getContentVersion(version);
         }
-
-        LogStatsFilter.getStats().incGet();
-        LogStatsFilter.getStats().addId(unversioned(id));
-
-        return contentApiInternal.getContentVersion(id);
     }
-
 
     public List<Map<String, Object>> batch(List<String> ids) {
         List<Map<String, Object>> contents = new ArrayList<>();
@@ -69,24 +87,24 @@ public class ContentApi {
         return contents;
     }
 
-    public boolean isSymbolicId(String id) {
-        return id.startsWith("uuid/") || id.startsWith("friendly/") || id.startsWith("ace-starterkit/");
-    }
+//    public boolean isSymbolicId(String id) {
+//        return id.startsWith("uuid/") || id.startsWith("friendly/") || id.startsWith("ace-starterkit/");
+//    }
 
     public boolean isVersionedId(String id) {
         Pattern pattern = Pattern.compile("(.*:.*):.*");
         Matcher matcher = pattern.matcher(id);
         return matcher.matches();
     }
-
-    public static String unversioned(String id) {
-        Pattern pattern = Pattern.compile("(.*:.*):.*");
-        Matcher matcher = pattern.matcher(id);
-        if (matcher.matches()) {
-            return matcher.group(1);
-        }
-        return id;
-    }
+//
+//    public static String unversioned(String id) {
+//        Pattern pattern = Pattern.compile("(.*:.*):.*");
+//        Matcher matcher = pattern.matcher(id);
+//        if (matcher.matches()) {
+//            return matcher.group(1);
+//        }
+//        return id;
+//    }
 
     public Map<String, Object> search(String q, int limit) {
 
@@ -108,19 +126,37 @@ public class ContentApi {
     class ContentApiInternal {
         // Returns unversioned id. Populates unversioned to versioned mapping.
         @Cacheable("alias")
-        public String resolveSymbolicId(String id) {
-            String versionedId = resolve(id);
-            String unversionedId = unversioned(versionedId);
-            unversionedId = unversionedId.replaceAll("version", "contentid");
-            cachePutUnversionedMapping(unversionedId, versionedId);
-            return unversionedId;
+        public String resolveSymbolicId(String alias) {
+            Map<String, Object> content = getContent(alias);
+
+            String id = ContentMapUtil.getId(content);
+            String version = ContentMapUtil.getVersion(content);
+
+            cachePutUnversionedMapping(id, version);
+            cachePutContentMapping(version, content);
+
+            return id;
         }
 
         @Cacheable("unversioned")
         public String resolveUnversionedId(String id) {
-            return resolve(id);
+            Map<String, Object> content = getContent(id);
+
+            String version = ContentMapUtil.getVersion(content);
+
+            cachePutContentMapping(version, content);
+
+            return version;
         }
 
+        public
+        @CachePut(cacheNames = "content", key = "#version")
+        Map<String, Object> cachePutContentMapping(String version, Map<String, Object> content) {
+            // Just here to populate cache
+            return content;
+        }
+
+        public
         @CachePut(cacheNames = "unversioned", key = "#unversionedId")
         String cachePutUnversionedMapping(String unversionedId, String versionedId) {
             // Just here to populate cache
@@ -132,48 +168,77 @@ public class ContentApi {
             // Intentionally left empty
         }
 
-        @Cacheable("content")
-        public Map<String, Object> getContentVersion(String id) {
+
+        public Map<String, Object> getContent(String alias) {
 
             LogStatsFilter.getStats().incUncachedGet();
 
             HttpClient httpClient = HttpClientBuilder.create().build();
-            HttpGet httpGet = new HttpGet(contentApiBaseUrl + "/content/" + id + "?variant=web");
+            HttpGet httpGet = new HttpGet(contentApiBaseUrl + "/content/view/p.public/alias/" + alias + "?variant=web");
             setAuthHeader(httpGet);
             try {
                 HttpResponse response = httpClient.execute(httpGet);
-                String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
 
-                return new Gson().fromJson(responseString, Map.class);
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+
+                    String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
+
+                    return new Gson().fromJson(responseString, Map.class);
+                } else {
+                    throw new RuntimeException("Error getting content. Response: " + response + ", request: " + httpGet);
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
-        private String resolve(String id) {
-            HttpClient httpClient = HttpClientBuilder.create().disableRedirectHandling().build();
-            String url = contentApiBaseUrl + "/content/view/p.public/" + id;
-            HttpGet httpGet = new HttpGet(url);
+        @Cacheable("content")
+        public Map<String, Object> getContentVersion(String version) {
+
+            LogStatsFilter.getStats().incUncachedGet();
+
+            HttpClient httpClient = HttpClientBuilder.create().build();
+            HttpGet httpGet = new HttpGet(contentApiBaseUrl + "/content/version/" + version + "?variant=web");
             setAuthHeader(httpGet);
             try {
                 HttpResponse response = httpClient.execute(httpGet);
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 
-                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_SEE_OTHER) {
                     String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
 
-                    Map<String, String> map = new Gson().fromJson(responseString, Map.class);
-                    String location = map.get("location");
-
-                    String versionedId = location.substring("/ace/content/".length());
-
-                    return versionedId;
+                    return new Gson().fromJson(responseString, Map.class);
                 } else {
-                    throw new RuntimeException("Error resolving id on relevant view: " + id);
+                    throw new RuntimeException("Error getting content. Response: " + response + ", request: " + httpGet);
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Error resolving id: " + id, e);
+                throw new RuntimeException(e);
             }
         }
+
+//        private String resolve(String id) {
+//            HttpClient httpClient = HttpClientBuilder.create().disableRedirectHandling().build();
+//            String url = contentApiBaseUrl + "/content/view/p.public/alias/" + id;
+//            HttpGet httpGet = new HttpGet(url);
+//            setAuthHeader(httpGet);
+//            try {
+//                HttpResponse response = httpClient.execute(httpGet);
+//
+//                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_SEE_OTHER) {
+//                    String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
+//
+//                    Map<String, String> map = new Gson().fromJson(responseString, Map.class);
+//                    String location = map.get("location");
+//
+//                    String versionedId = location.substring("/ace/content/".length());
+//
+//                    return versionedId;
+//                } else {
+//                    throw new RuntimeException("Error resolving id on relevant view: " + id + "(url: " + url + ")");
+//                }
+//            } catch (Exception e) {
+//                throw new RuntimeException("Error resolving id: " + id, e);
+//            }
+//        }
     }
 
     private void setAuthHeader(HttpGet httpGet) {
