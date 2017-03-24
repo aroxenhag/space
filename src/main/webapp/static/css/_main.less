@@ -294,6 +294,32 @@ h1, h2, h3, h4, h5, h6 {
   .article .body {
     padding: 0 80px;
   }
+
+  .article .body figure {
+    &.figure-right {
+      width: 80% !important;
+      margin-right: -80px;
+    }
+    &.figure-left {
+      width: 80% !important;
+      margin-left: -80px;
+    }
+  }
+}
+
+@media (min-width:544px) {
+  .article .body figure {
+    &.figure-right {
+      float: right;
+      width: 60%;
+      margin-left: 20px;
+    }
+    &.figure-left {
+      float: left;
+      width: 60%;
+      margin-right: 20px;
+    }
+  }
 }
 
 .article .body a {
@@ -309,8 +335,12 @@ h1, h2, h3, h4, h5, h6 {
   color: inherit;
 }
 
-.article .body .figure {
-  margin-bottom: 20px;
+.article .body figure {
+  margin-bottom: 10px;
+  figcaption {
+    color: rgba(0, 0, 0, 0.4);
+    font-size: 14px;
+  }
 }
 
 .ad-placeholder {

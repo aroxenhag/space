@@ -294,16 +294,28 @@ public class DispatcherController {
 
         public String process(String html) {
             Document document = Jsoup.parse(html);
-            Elements embeds = document.select(".p-smartembed");
+            Elements embeds = document.select("figure.image2");
             embeds.forEach(element -> {
 
-                String contentId = element.attr("polopoly:contentid");
+                String contentId = element.attr("data-onecms-id");
                 String imageUrl = imageUrlCreator.create(contentId);
 
+                String style = element.attr("style");
+
                 Element figure = new Element(Tag.valueOf("figure"), "");
+
+                if (style != null) {
+                    if (style.contains("right")) {
+                        figure.addClass("figure-right");
+                    } else if (style.contains("left")) {
+                        figure.addClass("figure-left");
+                    }
+                }
+
                 Element img = new Element(Tag.valueOf("img"), "");
                 img.attr("src", imageUrl);
                 figure.appendChild(img);
+                figure.append(element.select("figcaption").outerHtml());
 
                 element.replaceWith(figure);
             });
