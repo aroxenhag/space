@@ -62,7 +62,7 @@ public class BreakingNewsController {
     private SimpMessagingTemplate template;
 
     @EventListener(condition = "#event.draft == false and #event.type == 'mutation'")
-    public void update(ContentEventListener.ContentEvent event) {
+    public void update(ContentEvent event) {
         String contentId = event.getId();
         try {
             Map<String, Object> content = contentApi.getContent(contentId);

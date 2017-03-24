@@ -32,7 +32,7 @@ public class ContentApi {
     ContentApiInternal contentApiInternal;
 
     @EventListener(condition = "#event.draft == false and #event.type == 'mutation'")
-    public void evict(ContentEventListener.ContentEvent event) {
+    public void evict(ContentEvent event) {
         contentApiInternal.evictUnversionedId(event.getId());
     }
 

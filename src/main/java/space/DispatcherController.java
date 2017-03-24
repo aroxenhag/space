@@ -1,6 +1,11 @@
 package space;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Tag;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -100,7 +105,7 @@ public class DispatcherController {
             String type = ContentMapUtil.getType(content);
             if ("web-section".equals(type)) {
                 section = content;
-            } else if ("article".equals(type)) { // TODO: Change to "web-article" when it is possible to set that in the composer
+            } else if ("web-article".equals(type)) {
                 article = content;
             }
         }
@@ -197,9 +202,10 @@ public class DispatcherController {
         // Add generic utilities
         model.put("curl", new ContentUrlCreator(contentApi));
         model.put("lpage", new LandingPageUrlCreator());
-        model.put("iurl", new ImageUrlCreator(contentApi));
+        ImageUrlCreator imageUrlCreator = new ImageUrlCreator(contentApi);
+        model.put("iurl", imageUrlCreator);
         model.put("contentApi", contentApi);
-        model.put("utils", new Utils());
+        model.put("utils", new Utils(imageUrlCreator));
         model.put("date", new DateUtil());
 
         // Dispatch to correct template based on type
@@ -276,6 +282,35 @@ public class DispatcherController {
     }
 
     static class Utils {
+        private ImageUrlCreator imageUrlCreator;
+
+        public Utils(ImageUrlCreator imageUrlCreator) {
+            this.imageUrlCreator = imageUrlCreator;
+        }
+
+        public String cleanHtml(String html) {
+            return Jsoup.parse(html).text();
+        }
+
+        public String process(String html) {
+            Document document = Jsoup.parse(html);
+            Elements embeds = document.select(".p-smartembed");
+            embeds.forEach(element -> {
+
+                String contentId = element.attr("polopoly:contentid");
+                String imageUrl = imageUrlCreator.create(contentId);
+
+                Element figure = new Element(Tag.valueOf("figure"), "");
+                Element img = new Element(Tag.valueOf("img"), "");
+                img.attr("src", imageUrl);
+                figure.appendChild(img);
+
+                element.replaceWith(figure);
+            });
+
+            return document.html();
+        }
+
         public boolean isEmpty(Object o, String key) {
             return isEmpty(ContentMapUtil.getObject((Map<String, Object>) o, key));
         }

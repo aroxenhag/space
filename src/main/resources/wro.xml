@@ -5,4 +5,9 @@
         <js>/static/js/jquery.min.js</js>
         <js>/static/js/tether.min.js</js>
     </group>
+    <group name="the-ace-spike">
+        <css>/static/css/the-ace-spike.less</css>
+        <js>/static/js/jquery.min.js</js>
+        <js>/static/js/tether.min.js</js>
+    </group>
 </groups>
